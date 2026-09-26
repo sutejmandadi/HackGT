@@ -8,7 +8,7 @@ const geistSans = Geist({
 });
 
 export const metadata: Metadata = {
-  title: "Story Bank | Interview workspace",
+  title: "MeCode | Interview workspace",
   description: "Prepare, organize, and refine your interview stories.",
 };
 

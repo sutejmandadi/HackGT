@@ -84,7 +84,7 @@ function CloudAuth({ children }: { children: (user: User | null) => ReactNode })
       <ol style={{ paddingLeft: "var(--s6)", margin: "var(--s6) 0" }}>
         <li>Open the confirmation email from Supabase.</li>
         <li>Click the link to confirm your email address.</li>
-        <li>Return here and sign in to your Story Bank.</li>
+        <li>Return here and sign in to your MeCode.</li>
       </ol>
       <p className="muted">Keep the app running and open the link on this computer. If the email hasn&apos;t arrived, check spam or junk and allow a few minutes.</p>
       <button className="primary" style={{ marginTop: "var(--s6)" }} onClick={() => { setConfirmationEmail(""); setCreating(false); setMessage(""); }}>Back to sign in</button>
@@ -92,7 +92,7 @@ function CloudAuth({ children }: { children: (user: User | null) => ReactNode })
     </section>
   </main>;
   return <main className="auth-shell"><section className="editor">
-    <p className="eyebrow">Story Bank</p><h1>{creating ? "Create your account" : "Welcome back"}</h1>
+    <p className="eyebrow">MeCode</p><h1>{creating ? "Create your account" : "Welcome back"}</h1>
     <p className="intro">Keep your stories private and access them across devices.</p>
     <form onSubmit={authenticate}>
       <label className="field">Email<input type="email" autoComplete="email" required value={email} onChange={(event) => setEmail(event.target.value)} /></label>

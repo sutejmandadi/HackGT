@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, useSyncExternalStore, type FormEvent } fro
 import { missingSections, storySections, type Story } from "./story";
 
 import AuthBoundary from "./auth-boundary";
+import StrengthMatrix from "./strength-matrix";
 import { LOCAL_STORIES_KEY, readLocalStories, listStories, saveStory, deleteStory, importLocalStories } from "./story-repository";
 const emptyStory = (): Story => ({
   id: crypto.randomUUID(), title: "", organization: "", role: "",
@@ -15,7 +16,7 @@ const subscribeToHydration = () => () => {};
 
 export default function StoryBankPage() {
   const hydrated = useSyncExternalStore(subscribeToHydration, () => true, () => false);
-  return hydrated ? <AuthBoundary>{(user) => <StoryBank key={user?.id ?? "local"} ownerId={user?.id} />}</AuthBoundary> : <main className="bank-main">Loading your Story Bank…</main>;
+  return hydrated ? <AuthBoundary>{(user) => <StoryBank key={user?.id ?? "local"} ownerId={user?.id} />}</AuthBoundary> : <main className="bank-main">Loading MeCode…</main>;
 }
 
 function StoryBank({ ownerId }: { ownerId?: string }) {
@@ -24,6 +25,7 @@ function StoryBank({ ownerId }: { ownerId?: string }) {
     try { return { stories: readLocalStories(), error: "" }; }
     catch { return { stories: [] as Story[], error: "Browser stories could not be read. Existing data is preserved. Reload after restoring storage access." }; }
   });
+  const [activeTab, setActiveTab] = useState<"stories" | "matrix">("stories");
   const [stories, setStories] = useState<Story[]>(initial.stories);
   const [ready, setReady] = useState(!ownerId);
   const [storageError, setStorageError] = useState(initial.error);
@@ -122,8 +124,25 @@ function StoryBank({ ownerId }: { ownerId?: string }) {
 
   return (
     <div className="bank-shell">
-      <header className="topbar"><div className="brand"><span className="brand-icon">s.</span> Story Bank</div><span className="workspace-label">Interview workspace</span></header>
+      <header className="topbar"><div className="brand"><span className="brand-icon">m.</span> MeCode</div><span className="workspace-label">Interview workspace</span></header>
       <main className="bank-main">
+        <div className="workspace-tabs" role="tablist" aria-label="MeCode workspace">
+          {(["stories", "matrix"] as const).map((tab) => <button key={tab} id={`${tab}-tab`} role="tab" aria-selected={activeTab === tab} aria-controls={`${tab}-panel`} tabIndex={activeTab === tab ? 0 : -1} onClick={() => setActiveTab(tab)} onKeyDown={(event) => {
+            if (["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) {
+              event.preventDefault();
+              const next = event.key === "Home" ? "stories" : event.key === "End" ? "matrix" : activeTab === "stories" ? "matrix" : "stories";
+              setActiveTab(next); document.getElementById(`${next}-tab`)?.focus();
+            }
+          }}>{tab === "stories" ? "Stories" : "Strength matrix"}</button>)}
+        </div>
+        <section id="matrix-panel" role="tabpanel" aria-labelledby="matrix-tab" hidden={activeTab !== "matrix"}>
+          <StrengthMatrix stories={stories} ready={ready} storageError={storageError} dirty={dirty} onEdit={(story) => {
+            if (dirty && draft?.id !== story.id && !window.confirm("Discard your unsaved edits?")) return;
+            if (draft?.id !== story.id) { setDraft({ ...story }); setDirty(false); }
+            setActiveTab("stories");
+          }} />
+        </section>
+        <section id="stories-panel" role="tabpanel" aria-labelledby="stories-tab" hidden={activeTab !== "stories"}>
         <div className="page-heading"><div><p className="eyebrow">Preparation</p><h1>Your experience.<br /><span>Your next great answer.</span></h1><p className="intro">Build a collection of real moments you can draw on in any interview.</p></div><button className="primary" disabled={!ready || busy || !!storageError} onClick={() => openStory(emptyStory())}>+ Add a story</button></div>
         <div className="stats"><div><strong>{stories.length.toString().padStart(2, "0")}</strong><span>Stories collected</span></div><div><strong>{complete.toString().padStart(2, "0")}</strong><span>STAR outlines filled</span></div><div><strong>{(stories.length - complete).toString().padStart(2, "0")}</strong><span>Drafts to develop</span></div><p>Small moments count.<br />A tough decision can be a great story.</p></div>
         {storageError && <div role="alert" className="error">{storageError}{ownerId && <button className="text-button" onClick={() => { setReady(false); setReload((value) => value + 1); }}>Retry connection</button>}</div>}{ownerId && <button className="text-button" disabled={busy || !ready || !!storageError || dirty} onClick={importStories}>Import browser stories</button>}
@@ -149,6 +168,7 @@ function StoryBank({ ownerId }: { ownerId?: string }) {
               </fieldset></form>}
           </section>
         </div>
+        </section>
       </main><footer className="page-footer">Good stories start with real experience.</footer>
     </div>
   );

@@ -117,3 +117,29 @@ The code can be linted/typechecked without credentials, but cloud authentication
 
 If you already ran 001_stories.sql before this change, run supabase/migrations/002_remove_story_confirmation.sql in the SQL Editor. Do not rerun 001. This removes only the retired user_confirmed column; stories and their other fields are preserved.
 
+
+## MeCode strength matrix
+
+The Stories and Strength matrix tabs share the signed-in user's saved stories.
+Save edits before analyzing. Click a score for evidence and a story title to edit.
+Scores are session-only and must be recalculated after saved stories change.
+
+Start both services in separate terminals:
+
+```powershell
+# From repository root (first time only)
+python -m venv backend/.venv
+backend/.venv/Scripts/python.exe -m pip install -r backend/requirements.txt
+# Backend (from backend directory)
+.venv/Scripts/python.exe -m uvicorn main:app --host 127.0.0.1 --port 8000
+# Frontend (from frontend directory)
+npm.cmd run dev
+```
+
+First backend start downloads sentence-transformers/all-MiniLM-L6-v2.
+SCORER_API_URL is server-only and defaults to http://127.0.0.1:8000.
+The Next.js /api/strength-grid route verifies Supabase access tokens before
+forwarding stories. The Python backend must remain private/loopback: its original
+test endpoints are not authenticated. Production hosting needs private backend
+networking and rate limiting; do not expose port 8000 publicly. Local-only mode
+allows unauthenticated scoring during development only.
