@@ -225,11 +225,11 @@ export default function QuestionBank({
         <div className="qb-header-actions">
           {!practiceActive ? (
             <button className="primary" onClick={() => startPractice(0)}>
-              ⚡ Start Practice Drill
+              Start Practice Drill
             </button>
           ) : (
             <button className="text-button" onClick={() => setPracticeActive(false)}>
-              ✕ Exit Practice Mode
+              Exit Practice Mode
             </button>
           )}
         </div>
@@ -275,7 +275,7 @@ export default function QuestionBank({
             </div>
             <div className="qb-timer-block">
               <div className={`qb-timer-display ${timerPaceClass}`}>
-                ⏱ {formatTimer(timerSeconds)}
+                {formatTimer(timerSeconds)}
               </div>
               <button
                 className="text-button qb-timer-btn"
@@ -307,7 +307,7 @@ export default function QuestionBank({
             <div className="qb-practice-left">
               <div className="qb-card-inner">
                 <div className="qb-section-head">
-                  <h3>🎯 Interviewer Evaluation</h3>
+                  <h3>Interviewer Evaluation</h3>
                   <button
                     className="qb-mini-toggle"
                     onClick={() => setShowCoachTip((v) => !v)}
@@ -372,7 +372,7 @@ export default function QuestionBank({
             <div className="qb-practice-right">
               <div className="qb-card-inner">
                 <div className="qb-section-head">
-                  <h3>📝 Quick Notes & Bullets</h3>
+                  <h3>Quick Notes & Bullets</h3>
                   <span className="muted">Saved on this device</span>
                 </div>
                 <textarea
@@ -433,14 +433,14 @@ export default function QuestionBank({
                                 className="qb-story-title-link"
                                 onClick={() => onOpenStory(story)}
                               >
-                                {story.title} ↗
+                                {story.title}
                               </button>
                               <button
                                 className="qb-unlink-btn"
                                 title="Unlink this story"
                                 onClick={() => toggleStoryLink(practiceQuestion.id, story.id)}
                               >
-                                ✕
+                                Unlink
                               </button>
                             </div>
                             <div className="qb-story-mini-sections">
@@ -470,15 +470,15 @@ export default function QuestionBank({
           {/* Navigation Footer */}
           <div className="qb-practice-nav-bar">
             <button className="text-button" onClick={prevPracticeQuestion}>
-              ← Previous
+              Previous
             </button>
             <div className="qb-practice-nav-center">
               <button className="text-button" onClick={randomPracticeQuestion}>
-                🎲 Random Prompt
+                Random Prompt
               </button>
             </div>
             <button className="primary" onClick={nextPracticeQuestion}>
-              Next Question →
+              Next Question
             </button>
           </div>
         </section>
@@ -597,10 +597,10 @@ export default function QuestionBank({
                       onClick={() => cycleStatus(question.id)}
                       title="Click to cycle readiness status"
                     >
-                      {status === "unpracticed" && "○ Unpracticed"}
-                      {status === "needs_work" && "🟡 Needs work"}
-                      {status === "confident" && "🟢 Confident"}
-                      {status === "mastered" && "⭐️ Mastered"}
+                      {status === "unpracticed" && "Unpracticed"}
+                      {status === "needs_work" && "Needs work"}
+                      {status === "confident" && "Confident"}
+                      {status === "mastered" && "Mastered"}
                     </button>
                   </div>
 
@@ -638,7 +638,7 @@ export default function QuestionBank({
                             <option value="" disabled>+ Link story…</option>
                             {stories.map((s) => (
                               <option key={s.id} value={s.id}>
-                                {qLinks.includes(s.id) ? "✓ " : ""}{s.title}
+                                {qLinks.includes(s.id) ? "• " : ""}{s.title}
                               </option>
                             ))}
                           </select>
@@ -665,7 +665,7 @@ export default function QuestionBank({
                                 onClick={() => onOpenStory(story)}
                                 title="Open this story in editor"
                               >
-                                {story.title} ↗
+                                {story.title}
                               </button>
                               <button
                                 className="qb-chip-remove"
@@ -687,7 +687,7 @@ export default function QuestionBank({
                       className="primary qb-card-practice-btn"
                       onClick={() => startPractice(index)}
                     >
-                      ⚡ Practice Answering
+                      Practice Answering
                     </button>
                   </div>
                 </div>
