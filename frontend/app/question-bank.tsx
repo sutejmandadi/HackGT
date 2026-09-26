@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import {
   BEHAVIORAL_QUESTIONS,
   COMPETENCY_METAS,
@@ -8,10 +8,14 @@ import {
   type CompetencyKey,
 } from "./questions";
 import type { Story } from "./story";
+import PracticeRecorder from "./practice-recorder";
 
 type QuestionStatus = "unpracticed" | "needs_work" | "confident" | "mastered";
 
 interface QuestionBankProps {
+  onPracticeLockChange: (locked: boolean) => void;
+  onAttemptSaved: () => void;
+  onReports: () => void;
   stories: Story[];
   onOpenStory: (story: Story) => void;
   onDraftForQuestion: (question: BehavioralQuestion) => void;
@@ -44,6 +48,7 @@ const subscribeToHydration = () => () => {};
 
 export default function QuestionBank({
   stories,
+  onPracticeLockChange, onAttemptSaved, onReports,
   onOpenStory,
   onDraftForQuestion,
 }: QuestionBankProps) {
@@ -56,6 +61,9 @@ export default function QuestionBank({
   const [selectedCategory, setSelectedCategory] = useState<CompetencyKey | "all">("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [filterMode, setFilterMode] = useState<"all" | "linked" | "unlinked" | "mastered" | "needs_work">("all");
+
+  const [audioLocked, setAudioLocked] = useState(false);
+  const onAudioLock = useCallback((value: boolean) => { setAudioLocked(value); onPracticeLockChange(value); }, [onPracticeLockChange]);
 
   // Practice Drill Mode state
   const [practiceActive, setPracticeActive] = useState(false);
@@ -155,6 +163,7 @@ export default function QuestionBank({
   const practiceQuestion = filteredQuestions[practiceIndex] || filteredQuestions[0] || BEHAVIORAL_QUESTIONS[0];
 
   function startPractice(index = 0) {
+    if (audioLocked) return;
     setPracticeIndex(index);
     setPracticeActive(true);
     setTimerSeconds(0);
@@ -162,6 +171,7 @@ export default function QuestionBank({
   }
 
   function nextPracticeQuestion() {
+    if (audioLocked) return;
     if (practiceIndex < filteredQuestions.length - 1) {
       setPracticeIndex((i) => i + 1);
     } else {
@@ -172,6 +182,7 @@ export default function QuestionBank({
   }
 
   function prevPracticeQuestion() {
+    if (audioLocked) return;
     if (practiceIndex > 0) {
       setPracticeIndex((i) => i - 1);
     } else {
@@ -182,6 +193,7 @@ export default function QuestionBank({
   }
 
   function randomPracticeQuestion() {
+    if (audioLocked) return;
     if (filteredQuestions.length <= 1) return;
     let nextI = practiceIndex;
     while (nextI === practiceIndex) {
@@ -228,7 +240,7 @@ export default function QuestionBank({
               ⚡ Start Practice Drill
             </button>
           ) : (
-            <button className="text-button" onClick={() => setPracticeActive(false)}>
+            <button className="text-button" disabled={audioLocked} onClick={() => { setPracticeActive(false); setTimerRunning(false); }}>
               ✕ Exit Practice Mode
             </button>
           )}
@@ -302,7 +314,11 @@ export default function QuestionBank({
             </div>
           </div>
 
-          <div className="qb-practice-grid">
+          <PracticeRecorder key={practiceQuestion.id} question={practiceQuestion}
+            linkedStoryId={(links[practiceQuestion.id] || []).find(id => stories.some(s => s.id === id)) || null}
+            onLock={onAudioLock} onSaved={onAttemptSaved} onReports={onReports} />
+          {audioLocked && <p className="muted">Stop and analyze or discard your recording before changing questions or tabs.</p>}
+          <fieldset disabled={audioLocked} className="qb-practice-grid practice-fieldset">
             {/* Left Column: Framework & Interviewer Tip */}
             <div className="qb-practice-left">
               <div className="qb-card-inner">
@@ -465,19 +481,19 @@ export default function QuestionBank({
                 </div>
               </div>
             </div>
-          </div>
+          </fieldset>
 
           {/* Navigation Footer */}
           <div className="qb-practice-nav-bar">
-            <button className="text-button" onClick={prevPracticeQuestion}>
+            <button className="text-button" disabled={audioLocked} onClick={prevPracticeQuestion}>
               ← Previous
             </button>
             <div className="qb-practice-nav-center">
-              <button className="text-button" onClick={randomPracticeQuestion}>
+              <button className="text-button" disabled={audioLocked} onClick={randomPracticeQuestion}>
                 🎲 Random Prompt
               </button>
             </div>
-            <button className="primary" onClick={nextPracticeQuestion}>
+            <button className="primary" disabled={audioLocked} onClick={nextPracticeQuestion}>
               Next Question →
             </button>
           </div>
@@ -485,7 +501,7 @@ export default function QuestionBank({
       )}
 
       {/* QUESTION BROWSER CONTROLS */}
-      <section className="qb-browser-section" aria-label="Question list controls">
+      <section className="qb-browser-section" aria-label="Question list controls"><fieldset disabled={audioLocked} className="practice-fieldset">
         {/* Category Pills */}
         <div className="qb-category-tabs" role="tablist" aria-label="Competency filters">
           <button
@@ -695,7 +711,7 @@ export default function QuestionBank({
             })}
           </div>
         )}
-      </section>
+      </fieldset></section>
     </div>
   );
 }

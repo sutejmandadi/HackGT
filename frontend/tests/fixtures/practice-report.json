@@ -1,0 +1,698 @@
+{
+  "id": "712d7272-89e8-4c67-8777-df13b5d1e5ad",
+  "question_id": "lead-1",
+  "prompt": "Tell me about a time you led a team.",
+  "competency": "leadership",
+  "linked_story_id": null,
+  "created_at": "2026-09-26T17:05:05.584726+00:00",
+  "status": "completed",
+  "duration": 60.0,
+  "transcript": "During our launch, the team faced a backlog of customer requests. I was responsible for reducing the backlog before the next release. Um, I compared two options and chose a queue because it isolated failures. I built a prototype and tested it with 50 requests, you know, before launch. As a result, we reduced response time by 30 percent and I learned to verify load earlier.",
+  "segments": [
+    {
+      "index": 0,
+      "start": 1.579,
+      "end": 10.066,
+      "text": "During our launch, the team faced a backlog of customer requests.",
+      "words": [
+        {
+          "text": "During",
+          "start": 1.579,
+          "end": 2.171,
+          "confidence": 1.0
+        },
+        {
+          "text": "our",
+          "start": 2.368,
+          "end": 2.961,
+          "confidence": 1.0
+        },
+        {
+          "text": "launch,",
+          "start": 3.158,
+          "end": 3.75,
+          "confidence": 1.0
+        },
+        {
+          "text": "the",
+          "start": 3.947,
+          "end": 4.539,
+          "confidence": 1.0
+        },
+        {
+          "text": "team",
+          "start": 4.737,
+          "end": 5.329,
+          "confidence": 1.0
+        },
+        {
+          "text": "faced",
+          "start": 5.526,
+          "end": 6.118,
+          "confidence": 1.0
+        },
+        {
+          "text": "a",
+          "start": 6.316,
+          "end": 6.908,
+          "confidence": 1.0
+        },
+        {
+          "text": "backlog",
+          "start": 7.105,
+          "end": 7.697,
+          "confidence": 1.0
+        },
+        {
+          "text": "of",
+          "start": 7.895,
+          "end": 8.487,
+          "confidence": 1.0
+        },
+        {
+          "text": "customer",
+          "start": 8.684,
+          "end": 9.276,
+          "confidence": 1.0
+        },
+        {
+          "text": "requests.",
+          "start": 9.474,
+          "end": 10.066,
+          "confidence": 1.0
+        }
+      ],
+      "star": "situation",
+      "relevance": null,
+      "evidence": false,
+      "vague": false,
+      "wpm": 77.8,
+      "fillers": []
+    },
+    {
+      "index": 1,
+      "start": 10.263,
+      "end": 18.75,
+      "text": "I was responsible for reducing the backlog before the next release.",
+      "words": [
+        {
+          "text": "I",
+          "start": 10.263,
+          "end": 10.855,
+          "confidence": 1.0
+        },
+        {
+          "text": "was",
+          "start": 11.053,
+          "end": 11.645,
+          "confidence": 1.0
+        },
+        {
+          "text": "responsible",
+          "start": 11.842,
+          "end": 12.434,
+          "confidence": 1.0
+        },
+        {
+          "text": "for",
+          "start": 12.632,
+          "end": 13.224,
+          "confidence": 1.0
+        },
+        {
+          "text": "reducing",
+          "start": 13.421,
+          "end": 14.013,
+          "confidence": 1.0
+        },
+        {
+          "text": "the",
+          "start": 14.211,
+          "end": 14.803,
+          "confidence": 1.0
+        },
+        {
+          "text": "backlog",
+          "start": 15.0,
+          "end": 15.592,
+          "confidence": 1.0
+        },
+        {
+          "text": "before",
+          "start": 15.789,
+          "end": 16.382,
+          "confidence": 1.0
+        },
+        {
+          "text": "the",
+          "start": 16.579,
+          "end": 17.171,
+          "confidence": 1.0
+        },
+        {
+          "text": "next",
+          "start": 17.368,
+          "end": 17.961,
+          "confidence": 1.0
+        },
+        {
+          "text": "release.",
+          "start": 18.158,
+          "end": 18.75,
+          "confidence": 1.0
+        }
+      ],
+      "star": "task",
+      "relevance": null,
+      "evidence": false,
+      "vague": false,
+      "wpm": 77.8,
+      "fillers": []
+    },
+    {
+      "index": 2,
+      "start": 18.947,
+      "end": 29.013,
+      "text": "Um, I compared two options and chose a queue because it isolated failures.",
+      "words": [
+        {
+          "text": "Um,",
+          "start": 18.947,
+          "end": 19.539,
+          "confidence": 1.0
+        },
+        {
+          "text": "I",
+          "start": 19.737,
+          "end": 20.329,
+          "confidence": 1.0
+        },
+        {
+          "text": "compared",
+          "start": 20.526,
+          "end": 21.118,
+          "confidence": 1.0
+        },
+        {
+          "text": "two",
+          "start": 21.316,
+          "end": 21.908,
+          "confidence": 1.0
+        },
+        {
+          "text": "options",
+          "start": 22.105,
+          "end": 22.697,
+          "confidence": 1.0
+        },
+        {
+          "text": "and",
+          "start": 22.895,
+          "end": 23.487,
+          "confidence": 1.0
+        },
+        {
+          "text": "chose",
+          "start": 23.684,
+          "end": 24.276,
+          "confidence": 1.0
+        },
+        {
+          "text": "a",
+          "start": 24.474,
+          "end": 25.066,
+          "confidence": 1.0
+        },
+        {
+          "text": "queue",
+          "start": 25.263,
+          "end": 25.855,
+          "confidence": 1.0
+        },
+        {
+          "text": "because",
+          "start": 26.053,
+          "end": 26.645,
+          "confidence": 1.0
+        },
+        {
+          "text": "it",
+          "start": 26.842,
+          "end": 27.434,
+          "confidence": 1.0
+        },
+        {
+          "text": "isolated",
+          "start": 27.632,
+          "end": 28.224,
+          "confidence": 1.0
+        },
+        {
+          "text": "failures.",
+          "start": 28.421,
+          "end": 29.013,
+          "confidence": 1.0
+        }
+      ],
+      "star": "actions",
+      "relevance": null,
+      "evidence": true,
+      "vague": false,
+      "wpm": 77.5,
+      "fillers": [
+        {
+          "type": "um",
+          "start": 18.947,
+          "end": 19.539,
+          "segment": 2
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "start": 29.211,
+      "end": 40.066,
+      "text": "I built a prototype and tested it with 50 requests, you know, before launch.",
+      "words": [
+        {
+          "text": "I",
+          "start": 29.211,
+          "end": 29.803,
+          "confidence": 1.0
+        },
+        {
+          "text": "built",
+          "start": 30.0,
+          "end": 30.592,
+          "confidence": 1.0
+        },
+        {
+          "text": "a",
+          "start": 30.789,
+          "end": 31.382,
+          "confidence": 1.0
+        },
+        {
+          "text": "prototype",
+          "start": 31.579,
+          "end": 32.171,
+          "confidence": 1.0
+        },
+        {
+          "text": "and",
+          "start": 32.368,
+          "end": 32.961,
+          "confidence": 1.0
+        },
+        {
+          "text": "tested",
+          "start": 33.158,
+          "end": 33.75,
+          "confidence": 1.0
+        },
+        {
+          "text": "it",
+          "start": 33.947,
+          "end": 34.539,
+          "confidence": 1.0
+        },
+        {
+          "text": "with",
+          "start": 34.737,
+          "end": 35.329,
+          "confidence": 1.0
+        },
+        {
+          "text": "50",
+          "start": 35.526,
+          "end": 36.118,
+          "confidence": 1.0
+        },
+        {
+          "text": "requests,",
+          "start": 36.316,
+          "end": 36.908,
+          "confidence": 1.0
+        },
+        {
+          "text": "you",
+          "start": 37.105,
+          "end": 37.697,
+          "confidence": 1.0
+        },
+        {
+          "text": "know,",
+          "start": 37.895,
+          "end": 38.487,
+          "confidence": 1.0
+        },
+        {
+          "text": "before",
+          "start": 38.684,
+          "end": 39.276,
+          "confidence": 1.0
+        },
+        {
+          "text": "launch.",
+          "start": 39.474,
+          "end": 40.066,
+          "confidence": 1.0
+        }
+      ],
+      "star": "actions",
+      "relevance": null,
+      "evidence": true,
+      "vague": false,
+      "wpm": 77.4,
+      "fillers": [
+        {
+          "type": "you know",
+          "start": 37.105,
+          "end": 38.487,
+          "segment": 3
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "start": 40.263,
+      "end": 53.487,
+      "text": "As a result, we reduced response time by 30 percent and I learned to verify load earlier.",
+      "words": [
+        {
+          "text": "As",
+          "start": 40.263,
+          "end": 40.855,
+          "confidence": 1.0
+        },
+        {
+          "text": "a",
+          "start": 41.053,
+          "end": 41.645,
+          "confidence": 1.0
+        },
+        {
+          "text": "result,",
+          "start": 41.842,
+          "end": 42.434,
+          "confidence": 1.0
+        },
+        {
+          "text": "we",
+          "start": 42.632,
+          "end": 43.224,
+          "confidence": 1.0
+        },
+        {
+          "text": "reduced",
+          "start": 43.421,
+          "end": 44.013,
+          "confidence": 1.0
+        },
+        {
+          "text": "response",
+          "start": 44.211,
+          "end": 44.803,
+          "confidence": 1.0
+        },
+        {
+          "text": "time",
+          "start": 45.0,
+          "end": 45.592,
+          "confidence": 1.0
+        },
+        {
+          "text": "by",
+          "start": 45.789,
+          "end": 46.382,
+          "confidence": 1.0
+        },
+        {
+          "text": "30",
+          "start": 46.579,
+          "end": 47.171,
+          "confidence": 1.0
+        },
+        {
+          "text": "percent",
+          "start": 47.368,
+          "end": 47.961,
+          "confidence": 1.0
+        },
+        {
+          "text": "and",
+          "start": 48.158,
+          "end": 48.75,
+          "confidence": 1.0
+        },
+        {
+          "text": "I",
+          "start": 48.947,
+          "end": 49.539,
+          "confidence": 1.0
+        },
+        {
+          "text": "learned",
+          "start": 49.737,
+          "end": 50.329,
+          "confidence": 1.0
+        },
+        {
+          "text": "to",
+          "start": 50.526,
+          "end": 51.118,
+          "confidence": 1.0
+        },
+        {
+          "text": "verify",
+          "start": 51.316,
+          "end": 51.908,
+          "confidence": 1.0
+        },
+        {
+          "text": "load",
+          "start": 52.105,
+          "end": 52.697,
+          "confidence": 1.0
+        },
+        {
+          "text": "earlier.",
+          "start": 52.895,
+          "end": 53.487,
+          "confidence": 1.0
+        }
+      ],
+      "star": "actions",
+      "relevance": null,
+      "evidence": true,
+      "vague": false,
+      "wpm": 77.1,
+      "fillers": []
+    }
+  ],
+  "metrics": {
+    "duration": 60,
+    "total_words": 66,
+    "wpm": 66.0,
+    "speaking_wpm": 101.3,
+    "pace_definition": "WPM uses total recording time. Speaking WPM uses the sum of recognized word durations, not a physiological articulation measure.",
+    "filler_count": 2,
+    "filler_rate": 2.0,
+    "filler_types": {
+      "um": 1,
+      "you know": 1
+    },
+    "fillers": [
+      {
+        "type": "um",
+        "start": 18.947,
+        "end": 19.539,
+        "segment": 2
+      },
+      {
+        "type": "you know",
+        "start": 37.105,
+        "end": 38.487,
+        "segment": 3
+      }
+    ],
+    "pauses": [
+      {
+        "start": 0.0,
+        "end": 1.579,
+        "seconds": 1.58,
+        "long": false
+      },
+      {
+        "start": 53.487,
+        "end": 60,
+        "seconds": 6.51,
+        "long": true
+      }
+    ],
+    "pause_definition": "Gaps of at least 1.5s between recognized words; long gaps are at least 3s. These may include noise or unrecognized speech.",
+    "repeated_phrases": [],
+    "repeated_words": {},
+    "average_sentence_length": 13.2,
+    "longest_monologue": 51.91,
+    "star": {
+      "situation": {
+        "words": 11,
+        "seconds": 8.49,
+        "percent": 16.6
+      },
+      "task": {
+        "words": 11,
+        "seconds": 8.49,
+        "percent": 16.6
+      },
+      "actions": {
+        "words": 44,
+        "seconds": 34.15,
+        "percent": 66.8
+      },
+      "result": {
+        "words": 0,
+        "seconds": 0.0,
+        "percent": 0.0
+      },
+      "unknown": {
+        "words": 0,
+        "seconds": 0.0,
+        "percent": 0.0
+      }
+    },
+    "numeric_mentions": 3,
+    "ownership": {
+      "individual": 4,
+      "team": 2
+    },
+    "activity": null,
+    "redundancy_ratio": 0.0
+  },
+  "analysis": {
+    "scores": {
+      "Delivery": 58.7,
+      "Structure": 75.0,
+      "Specificity": 100.0,
+      "Impact": 0.0,
+      "Overall": 58.4
+    },
+    "score_explanation": "coaching-1.0: Overall is the equal mean of available subscores. Delivery = 65% pace (110–170 WPM coaching target, 1.2 points lost per WPM outside) + 35% filler control (100 minus 10 × fillers/minute). Structure = 25 per detected STAR section with ≥5 words. Specificity = 25 per segment with a numeric mention + 15 per segment with a decision/verification cue, capped at 100. Relevance = mean local semantic similarity ×200, clipped to 0–100; omitted if unavailable. Impact = 40 for a Result, 40 for numeric Result detail, 20 for a Result lesson. This heuristic rubric is not a hiring assessment.",
+    "summary": "End with what changed, a truthful measure if available, or a concrete lesson.",
+    "strengths": [
+      {
+        "kind": "observation",
+        "text": "You included concrete numeric details. Preserve these when tightening the answer; a number is not by itself proof of impact.",
+        "segments": [
+          2,
+          3
+        ]
+      },
+      {
+        "kind": "observation",
+        "text": "You described a decision or verification step. Keep the reasoning attached to your personal action.",
+        "segments": [
+          2,
+          3
+        ]
+      }
+    ],
+    "improvements": [
+      {
+        "kind": "recommendation",
+        "text": "End with what changed, a truthful measure if available, or a concrete lesson.",
+        "segments": [
+          4
+        ]
+      },
+      {
+        "kind": "recommendation",
+        "text": "2 possible fillers were counted. At the marked transitions, use a brief silent pause instead of a filler.",
+        "segments": [
+          2,
+          3
+        ]
+      },
+      {
+        "kind": "recommendation",
+        "text": "Rehearse the highlighted action in two sentences: what you chose, then why that choice mattered.",
+        "segments": [
+          2
+        ]
+      }
+    ],
+    "exercise": "Record another answer using four short beats: context, your responsibility, your decision and reason, then the observable outcome. End with what changed, a truthful measure if available, or a concrete lesson.",
+    "outline": [
+      {
+        "section": "situation",
+        "segments": [
+          0
+        ],
+        "prompt": "One sentence: what problem mattered?"
+      },
+      {
+        "section": "task",
+        "segments": [
+          1
+        ],
+        "prompt": "One sentence: what did you own?"
+      },
+      {
+        "section": "actions",
+        "segments": [
+          2,
+          3,
+          4
+        ],
+        "prompt": "Two sentences: what did you decide, do, and verify?"
+      },
+      {
+        "section": "result",
+        "segments": [],
+        "prompt": "One sentence: what changed or what did you learn?"
+      }
+    ],
+    "intersections": [
+      {
+        "kind": "inference",
+        "text": "Detected context takes 33% of transcript-segment time; actions take 67%. Review the section labels before using this balance.",
+        "segments": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      {
+        "kind": "inference",
+        "text": "Detected actions pace is 77 WPM versus 66 WPM for the full recording. Segment pace excludes between-segment pauses.",
+        "segments": [
+          2,
+          3,
+          4
+        ]
+      }
+    ],
+    "confidence": "limited",
+    "limitations": [
+      "Transcription can omit fillers or mishear numbers; check the transcript.",
+      "STAR and relevance use an uncalibrated local similarity model, not a trained interview evaluator.",
+      "Numeric mentions are evidence cues, not fact checking. Vague-word flags do not prove a claim is unsupported.",
+      "No assessment of personality, honesty, emotion, confidence, accent, or employability.",
+      "Sentence boundaries depend on transcription punctuation. Segment time is not the same as pure speech time.",
+      "DEMO FIXTURE: the transcript is synthetic and does not describe this recording."
+    ],
+    "semantic_method": "rules-only (semantic model unavailable)",
+    "intent_assessment": "Semantic overlap is a preliminary relevance signal; it cannot establish that the interviewer’s intent was fully answered.",
+    "ownership_clarity": "4 individual versus 2 team pronouns. Team language is appropriate; clarify your own decision when relevant.",
+    "action_depth": "2 segments contain decision or verification cues. Inspect the linked transcript, not just the count.",
+    "result_strength": "0 Result segments; 0 include a numeric mention.",
+    "coherence": "0 backward transitions in inferred STAR order. This is a review cue, not a logical-coherence verdict."
+  },
+  "pipeline_version": "interview-mri-1.0",
+  "rubric_version": "coaching-1.0",
+  "is_mock": true,
+  "error": null
+}

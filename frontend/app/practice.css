@@ -1,0 +1,32 @@
+.practice-fieldset { border:0; padding:0; margin:0; min-width:0; }
+.practice-recorder,.selected-report { border:1px solid var(--border); background:var(--surface); border-radius:var(--panel-radius); padding:var(--s6); margin:var(--s6) 0; min-width:0; }
+.practice-controls,.evidence-links,.attempt-row { display:flex; flex-wrap:wrap; align-items:center; gap:var(--s2); }
+.practice-controls .text-button,.evidence-links .text-button { margin:0; }
+.audio-level { height:8px; border-radius:4px; overflow:hidden; background:var(--raised); margin:var(--s4) 0; }
+.audio-level span { display:block; height:100%; background:var(--accent); transition:width 150ms; }
+.practice-recorder audio,.interview-report audio { display:block; width:100%; max-width:640px; margin:var(--s4) 0; }
+.report-score-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(110px,1fr)); gap:var(--s3); margin:var(--s6) 0; }
+.report-score-grid>div { padding:var(--s4); border:1px solid var(--border); background:var(--raised); border-radius:var(--control-radius); }
+.report-score-grid strong { display:block; font-size:24px; }.report-score-grid small { font-size:12px; font-weight:400; color:var(--muted); }.report-score-grid span { color:var(--muted); font-size:var(--small); }
+.reports-workspace h2 { font-size:20px; }.reports-workspace h3,.interview-report h3 { font-size:16px; }
+.interview-report details,.question-history { border-top:1px solid var(--border); padding:var(--s3) 0; }
+.interview-report summary,.reports-workspace summary { min-height:44px; cursor:pointer; padding:var(--s2); }
+.interview-report summary:focus-visible,.reports-workspace summary:focus-visible { outline:2px solid var(--accent); }
+.mri-timeline { display:flex; gap:4px; overflow-x:auto; padding:var(--s2) 0; }
+.mri-segment { min-width:120px; flex-shrink:0; background:var(--raised); border:1px solid var(--border); border-top:3px solid var(--muted); color:var(--text); padding:var(--s3); text-align:left; border-radius:var(--control-radius); }
+.mri-segment>span,.mri-segment>strong,.mri-segment>small { display:block; }.mri-segment small { color:var(--muted); }
+.mri-segment[aria-pressed=true] { outline:2px solid var(--accent); outline-offset:-2px; background:var(--accent-surface); }
+.star-situation { border-top-color:var(--violet); }.star-task { border-top-color:var(--warning); }.star-actions { border-top-color:var(--accent); }.star-result { border-top-color:var(--success); }
+.pace-chart { width:100%; max-height:190px; color:var(--muted); margin:var(--s4) 0; }.pace-chart text,.report-chart text,.report-columns svg text { fill:var(--muted); font-family:var(--font); font-size:12px; }
+.mri-evidence { padding:var(--s4); background:var(--raised); border:1px solid var(--border); border-radius:var(--control-radius); margin:var(--s4) 0; overflow-wrap:anywhere; }
+.mri-evidence h4 { margin:0; }.mri-evidence .badge { margin-right:var(--s2); }
+.report-columns { display:grid; grid-template-columns:1fr 1fr; gap:var(--s6); }.report-columns>section { min-width:0; }.report-columns svg { width:100%; }
+.coaching-list { padding-left:var(--s6); }.coaching-list li { margin:var(--s4) 0; }.evidence-links { margin-top:var(--s2); }.evidence-links .text-button { font-size:11px; min-height:36px; }
+.transcript-list { display:grid; gap:var(--s2); }.transcript-segment { display:block; text-align:left; padding:var(--s3); border:1px solid var(--border); background:var(--bg); color:var(--text); border-radius:var(--control-radius); }.transcript-segment span { display:block; }.transcript-segment.selected { border-color:var(--accent); }.transcript-segment strong { font-size:var(--small); color:var(--muted); }
+.report-facts { display:grid; grid-template-columns:1fr 1.4fr; gap:var(--s3); }.report-facts dt { color:var(--muted); }.report-facts dd { margin:0; }
+.report-chart-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:var(--s4); }.report-chart { margin:0; padding:var(--s3); background:var(--surface); border:1px solid var(--border); border-radius:var(--panel-radius); }.report-chart svg { width:100%; }.report-chart figcaption { font-size:var(--small); }
+.star-balance { display:flex; flex-wrap:wrap; gap:var(--s4); margin:var(--s4) 0; }.star-balance>div { flex:1; min-width:120px; }.star-balance span,.star-balance meter { display:block; width:100%; }
+.question-history summary>span { display:block; margin-top:var(--s1); }.attempt-row { justify-content:space-between; border-top:1px solid var(--border); padding:var(--s2); }
+.report-skeleton { padding:var(--s8); border:1px solid var(--border); background:var(--raised); border-radius:var(--panel-radius); }
+.interview-report,.reports-workspace { overflow-wrap:anywhere; }.workspace-tabs { flex-wrap:wrap; }
+@media(max-width:720px) { .practice-recorder,.selected-report { padding:var(--s4); }.report-columns,.report-chart-grid,.report-facts { grid-template-columns:1fr; }.report-score-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }.practice-controls button { flex:1; }.report-facts dd { margin-bottom:var(--s3); } }

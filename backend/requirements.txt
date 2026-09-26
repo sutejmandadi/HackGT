@@ -9,3 +9,6 @@ supabase
 python-dotenv
 
 pypdf>=6.19,<7
+
+imageio-ffmpeg>=0.6,<0.7
+httpx>=0.28,<1

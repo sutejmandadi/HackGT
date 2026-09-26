@@ -1,0 +1,195 @@
+"""Transparent coaching signals. No personality, emotion or hiring judgments."""
+import re
+from collections import Counter
+from practice_models import Segment, Analysis, Feedback, RUBRIC
+from resume_parser import ANCHORS, classify
+
+FILLERS = {"um", "uh", "erm", "er", "hmm"}
+FILLER_PHRASES = {("you", "know"), ("i", "mean")}
+TOKEN = re.compile(r"\b[\w]+(?:['’-][\w]+)*\b")
+NUMBER = re.compile(r"\b\d+(?:[.,]\d+)*(?:%|\b)|\b(?:one|two|three|four|five|six|seven|eight|nine|ten|hundred|thousand|million)\b", re.I)
+VAGUE = re.compile(r"\b(?:things|stuff|somehow|very good|really great|a lot better|helped a lot)\b", re.I)
+OWN = re.compile(r"\b(?:I|me|my|mine)\b", re.I)
+TEAM = re.compile(r"\b(?:we|us|our|ours)\b", re.I)
+DECISION = re.compile(r"\b(?:because|decided|chose|tested|compared|trade-off|tradeoff|instead|measured|verified|diagnosed)\b", re.I)
+KEYS = ["situation", "task", "actions", "result", "unknown"]
+
+def words(text):
+    return TOKEN.findall(text)
+
+def fill(segment):
+    found = []
+    tokens = [re.sub(r"[^a-z'-]", "", w.text.lower()) for w in segment.words]
+    skip = -1
+    for i, (token, word) in enumerate(zip(tokens, segment.words)):
+        if i <= skip:
+            continue
+        kind = token if token in FILLERS else None
+        if tuple(tokens[i:i+2]) in FILLER_PHRASES:
+            kind = " ".join(tokens[i:i+2]); skip = i+1
+        # Conservative discourse-like only; excludes 'I like', 'looks like', 'like X'.
+        if token == "like" and word.text.endswith(",") and (i == 0 or segment.words[i-1].text.endswith(",")):
+            kind = "like (discourse cue)"
+        if kind:
+            found.append({"type": kind, "start": word.start, "end": segment.words[min(skip if skip >= i else i, len(tokens)-1)].end, "segment": segment.index})
+    return found
+
+def metrics(segments: list[Segment], duration: float, activity: dict | None = None):
+    text = " ".join(s.text for s in segments)
+    count = len(words(text))
+    allocation = {k: {"words": 0, "seconds": 0.0, "percent": 0.0} for k in KEYS}
+    fillers = []
+    all_words = [w for s in segments for w in s.words]
+    for s in segments:
+        n = len(words(s.text))
+        s.wpm = round(n * 60 / max(s.end-s.start, .1), 1)
+        s.fillers = fill(s); fillers.extend(s.fillers)
+        allocation[s.star]["words"] += n
+        allocation[s.star]["seconds"] += s.end-s.start
+    spans = sum(v['seconds'] for v in allocation.values())
+    for value in allocation.values():
+        value['percent'] = round(100 * value['seconds'] / max(spans, .1), 1)
+        value['seconds'] = round(value['seconds'], 2)
+    pauses = []
+    last = 0.0
+    for word in all_words:
+        if word.start-last >= 1.5:
+            pauses.append({"start": round(last, 2), "end": word.start, "seconds": round(word.start-last, 2), "long": word.start-last >= 3})
+        last = max(last, word.end)
+    if duration-last >= 1.5:
+        pauses.append({"start": last, "end": duration, "seconds": round(duration-last, 2), "long": duration-last >= 3})
+    bounds = [0.0] + [p['end'] for p in pauses]
+    ends = [p['start'] for p in pauses] + [duration]
+    longest = max((e-b for b,e in zip(bounds,ends)), default=0)
+    normalized = [w.lower() for w in words(text)]
+    phrases = Counter(' '.join(normalized[i:i+3]) for i in range(len(normalized)-2))
+    repeated = [{"phrase": p, "count": c} for p,c in phrases.most_common(10) if c > 1]
+    repeated_words = Counter(a for a,b in zip(normalized, normalized[1:]) if a == b)
+    sentences = [s for s in re.split(r"[.!?]+", text) if words(s)]
+    return {
+        "duration": round(duration,2), "total_words": count, "wpm": round(count*60/max(duration,.1),1),
+        "speaking_wpm": round(count*60/max(sum(w.end-w.start for w in all_words),.1),1),
+        "pace_definition": "WPM uses total recording time. Speaking WPM uses the sum of recognized word durations, not a physiological articulation measure.",
+        "filler_count": len(fillers), "filler_rate": round(len(fillers)*60/max(duration,.1),2),
+        "filler_types": dict(Counter(f['type'] for f in fillers)), "fillers": fillers,
+        "pauses": pauses, "pause_definition": "Gaps of at least 1.5s between recognized words; long gaps are at least 3s. These may include noise or unrecognized speech.",
+        "repeated_phrases": repeated, "repeated_words": dict(repeated_words),
+        "average_sentence_length": round(count/max(len(sentences),1),1), "longest_monologue": round(longest,2),
+        "star": allocation, "numeric_mentions": len(NUMBER.findall(text)),
+        "ownership": {"individual": len(OWN.findall(text)), "team": len(TEAM.findall(text))},
+        "activity": activity, "redundancy_ratio": round(sum(c-1 for c in phrases.values() if c>1)/max(len(normalized),1),3),
+    }
+
+def semantic(segments, prompt, competency, model):
+    method = "rules-only (semantic model unavailable)"
+    if model is not None:
+        import numpy as np
+        anchors = model.encode(list(ANCHORS.values()) + [prompt, competency.replace('_',' ')], normalize_embeddings=True)
+        vectors = model.encode([s.text for s in segments], normalize_embeddings=True)
+        values = vectors @ anchors.T
+        for s,row in zip(segments, values):
+            order = np.argsort(row[:4])
+            best = int(order[-1])
+            # Unknown is retained when neither explicit language nor embeddings support STAR.
+            explicit = classify(s.text)
+            s.star = explicit if explicit != 'actions' else (list(ANCHORS)[best] if row[best] >= .30 and row[best]-row[order[-2]] >= .04 else 'unknown')
+            if re.search(r"\b(?:built|created|implemented|led|designed|tested|decided|chose|analyzed|organized|I did)\b",s.text,re.I):
+                s.star = 'actions'
+            if re.search(r"^(?:as a result|the result|we achieved|I achieved|we reduced|I reduced)",s.text,re.I):
+                s.star = 'result'
+            s.relevance = round(float(max(row[4], row[5])),3)
+        method = "local MiniLM semantic similarity + explicit STAR cues"
+    else:
+        for s in segments:
+            s.star = classify(s.text)
+    for s in segments:
+        s.evidence = bool(NUMBER.search(s.text))
+        s.vague = bool(VAGUE.search(s.text))
+    return method
+
+def score_components(m, segments):
+    # Coaching targets, not validated predictors of interview success.
+    wpm = m['wpm']
+    pace = max(0, 100 - max(110-wpm, wpm-170, 0)*1.2)
+    delivery = max(0, .65*pace + .35*max(0, 100-m['filler_rate']*10))
+    structure = sum(25 for k in KEYS[:4] if m['star'][k]['words'] >= 5)
+    specificity = min(100, 25*sum(s.evidence for s in segments) + 15*sum(bool(DECISION.search(s.text)) for s in segments))
+    relevance_values = [s.relevance for s in segments if s.relevance is not None]
+    relevance = max(0,min(100, sum(relevance_values)/len(relevance_values)*200)) if relevance_values else None
+    results = [s for s in segments if s.star == 'result']
+    impact = min(100, (40 if results else 0) + (40 if any(s.evidence for s in results) else 0) + (20 if any(re.search(r'learned|next time|lesson',s.text,re.I) for s in results) else 0))
+    scores = {"Delivery": round(delivery,1), "Structure": structure, "Specificity": specificity, "Impact": impact}
+    if relevance is not None:
+        scores['Relevance'] = round(relevance,1)
+    scores['Overall'] = round(sum(scores.values())/len(scores),1)
+    return scores
+
+def analyze(segments, duration, prompt, competency, model=None, activity=None, is_mock=False):
+    method = semantic(segments, prompt, competency, model)
+    m = metrics(segments,duration,activity)
+    scores = score_components(m, segments)
+    refs = [s.index for s in segments]
+    by_star = {k: [s for s in segments if s.star == k] for k in KEYS}
+    def feedback(kind,text,ss):
+        return Feedback(kind=kind,text=text,segments=[s.index for s in ss])
+    strengths = []
+    specific = [s for s in segments if s.evidence]
+    decisions = [s for s in segments if DECISION.search(s.text)]
+    if specific:
+        strengths.append(feedback('observation', 'You included concrete numeric details. Preserve these when tightening the answer; a number is not by itself proof of impact.', specific[:2]))
+    if decisions:
+        strengths.append(feedback('observation', 'You described a decision or verification step. Keep the reasoning attached to your personal action.', decisions[:2]))
+    if len(strengths)<2:
+        strengths.append(feedback('observation', f"You supplied {m['total_words']} words of material to refine. Use the highlighted passage as a starting point, not a completed answer.", segments[:1]))
+    improvements = []
+    for k in ['actions','result','task','situation']:
+        if m['star'][k]['words'] < 5:
+            improvements.append(feedback('recommendation', {'actions':'State one decision you personally made, the alternative, and why you chose it.', 'result':'End with what changed, a truthful measure if available, or a concrete lesson.', 'task':'Name your personal responsibility and what success required.', 'situation':'Open with one sentence naming the problem and who it affected.'}[k], segments[-1:] if k=='result' else segments[:1]))
+    vague = [s for s in segments if s.vague]
+    if vague:
+        improvements.append(feedback('recommendation','Replace vague wording in the highlighted passage with the specific object, decision, or observable change.',vague[:2]))
+    if m['filler_count']:
+        affected = [s for s in segments if s.fillers]
+        improvements.append(feedback('recommendation',f"{m['filler_count']} possible fillers were counted. At the marked transitions, use a brief silent pause instead of a filler.",affected[:2]))
+    if by_star['result'] and not any(s.evidence for s in by_star['result']):
+        improvements.append(feedback('recommendation','Your detected Result has no numeric detail. Add a real measure if you have one; otherwise describe an observable outcome without inventing a number.',by_star['result']))
+    improvements.extend([
+        feedback('recommendation','Rehearse the highlighted action in two sentences: what you chose, then why that choice mattered.',by_star['actions'][:1] or segments[:1]),
+        feedback('recommendation','Tie the final sentence directly to the question; explain what this example demonstrates.',segments[-1:]),
+        feedback('recommendation','Remove one repeated setup detail while retaining the specific decision and outcome.',segments[:1]),
+    ])
+    intersections = []
+    context = m['star']['situation']['percent']+m['star']['task']['percent']
+    intersections.append(feedback('inference',f"Detected context takes {context:.0f}% of transcript-segment time; actions take {m['star']['actions']['percent']:.0f}%. Review the section labels before using this balance.",segments))
+    for key in ['actions','result']:
+        group = by_star[key]
+        if group:
+            n = sum(len(words(s.text)) for s in group); seconds = sum(s.end-s.start for s in group)
+            pace = n*60/max(seconds,.1)
+            intersections.append(feedback('inference',f"Detected {key} pace is {pace:.0f} WPM versus {m['wpm']:.0f} WPM for the full recording. Segment pace excludes between-segment pauses.",group))
+    if by_star['actions'] and by_star['result']:
+        if any(s.evidence for s in by_star['actions']) and not any(s.evidence for s in by_star['result']):
+            intersections.append(feedback('inference','Numeric detail appears in Actions but not the detected Result. State the actual outcome rather than repeating effort.',by_star['actions']+by_star['result']))
+    ownership = m['ownership']
+    ordering = [KEYS.index(s.star) for s in segments if s.star != 'unknown']
+    backwards = sum(b<a for a,b in zip(ordering,ordering[1:]))
+    analysis = Analysis(
+        scores=scores,
+        score_explanation=f"{RUBRIC}: Overall is the equal mean of available subscores. Delivery = 65% pace (110–170 WPM coaching target, 1.2 points lost per WPM outside) + 35% filler control (100 minus 10 × fillers/minute). Structure = 25 per detected STAR section with ≥5 words. Specificity = 25 per segment with a numeric mention + 15 per segment with a decision/verification cue, capped at 100. Relevance = mean local semantic similarity ×200, clipped to 0–100; omitted if unavailable. Impact = 40 for a Result, 40 for numeric Result detail, 20 for a Result lesson. This heuristic rubric is not a hiring assessment.",
+        summary=improvements[0].text,
+        strengths=strengths[:2], improvements=improvements[:3], exercise="Record another answer using four short beats: context, your responsibility, your decision and reason, then the observable outcome. " + improvements[0].text,
+        outline=[{"section":k, "segments":[s.index for s in by_star[k]], "prompt":p} for k,p in zip(KEYS[:4],['One sentence: what problem mattered?','One sentence: what did you own?','Two sentences: what did you decide, do, and verify?','One sentence: what changed or what did you learn?'])],
+        intersections=intersections, confidence='limited' if is_mock or m['total_words']<60 or model is None else 'moderate',
+        limitations=['Transcription can omit fillers or mishear numbers; check the transcript.', 'STAR and relevance use an uncalibrated local similarity model, not a trained interview evaluator.', 'Numeric mentions are evidence cues, not fact checking. Vague-word flags do not prove a claim is unsupported.', 'No assessment of personality, honesty, emotion, confidence, accent, or employability.', 'Sentence boundaries depend on transcription punctuation. Segment time is not the same as pure speech time.'] + (['DEMO FIXTURE: the transcript is synthetic and does not describe this recording.'] if is_mock else []),
+        semantic_method=method,
+        intent_assessment='Semantic overlap is a preliminary relevance signal; it cannot establish that the interviewer’s intent was fully answered.',
+        ownership_clarity=f"{ownership['individual']} individual versus {ownership['team']} team pronouns. Team language is appropriate; clarify your own decision when relevant.",
+        action_depth=f"{len(decisions)} segments contain decision or verification cues. Inspect the linked transcript, not just the count.",
+        result_strength=f"{len(by_star['result'])} Result segments; {sum(s.evidence for s in by_star['result'])} include a numeric mention.",
+        coherence=f"{backwards} backward transitions in inferred STAR order. This is a review cue, not a logical-coherence verdict.",
+    )
+    # Every cited index must refer to actual transcript evidence.
+    for item in analysis.strengths+analysis.improvements+analysis.intersections:
+        if any(i not in refs for i in item.segments):
+            raise ValueError('Invalid evidence reference')
+    return m, analysis

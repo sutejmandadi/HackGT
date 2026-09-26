@@ -6,6 +6,7 @@ import { missingSections, storySections, type Story } from "./story";
 import AuthBoundary from "./auth-boundary";
 import StrengthMatrix from "./strength-matrix";
 import QuestionBank from "./question-bank";
+import PracticeReports from "./practice-reports";
 import ResumeImport, { resumeIdentity } from "./resume-import";
 import type { BehavioralQuestion } from "./questions";
 import { LOCAL_STORIES_KEY, readLocalStories, listStories, saveStory, deleteStory, importLocalStories, saveResumeStories } from "./story-repository";
@@ -28,7 +29,9 @@ function StoryBank({ ownerId }: { ownerId?: string }) {
     try { return { stories: readLocalStories(), error: "" }; }
     catch { return { stories: [] as Story[], error: "Browser stories could not be read. Existing data is preserved. Reload after restoring storage access." }; }
   });
-  const [activeTab, setActiveTab] = useState<"stories" | "matrix" | "questions">("stories");
+  const [activeTab, setActiveTab] = useState<"stories" | "matrix" | "questions" | "reports">("stories");
+  const [practiceLocked, setPracticeLocked] = useState(false);
+  const [reportRefresh, setReportRefresh] = useState(0);
   const [stories, setStories] = useState<Story[]>(initial.stories);
   const [ready, setReady] = useState(!ownerId);
   const [storageError, setStorageError] = useState(initial.error);
@@ -153,6 +156,7 @@ function StoryBank({ ownerId }: { ownerId?: string }) {
             { id: "stories", label: "Stories" },
             { id: "matrix", label: "Strength matrix" },
             { id: "questions", label: "Question bank (50)" },
+            { id: "reports", label: "Reports" },
           ] as const).map(({ id: tab, label }) => (
             <button
               key={tab}
@@ -161,11 +165,13 @@ function StoryBank({ ownerId }: { ownerId?: string }) {
               aria-selected={activeTab === tab}
               aria-controls={`${tab}-panel`}
               tabIndex={activeTab === tab ? 0 : -1}
-              onClick={() => setActiveTab(tab)}
+              disabled={practiceLocked && tab !== activeTab}
+              onClick={() => { if (!practiceLocked) setActiveTab(tab); }}
               onKeyDown={(event) => {
                 if (["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) {
                   event.preventDefault();
-                  const tabs = ["stories", "matrix", "questions"] as const;
+                  if (practiceLocked) return;
+                  const tabs = ["stories", "matrix", "questions", "reports"] as const;
                   const cur = tabs.indexOf(activeTab);
                   const next =
                     event.key === "Home"
@@ -184,8 +190,12 @@ function StoryBank({ ownerId }: { ownerId?: string }) {
             </button>
           ))}
         </div>
+        <section id="reports-panel" role="tabpanel" aria-labelledby="reports-tab" hidden={activeTab !== "reports"}><PracticeReports refresh={reportRefresh} /></section>
         <section id="questions-panel" role="tabpanel" aria-labelledby="questions-tab" hidden={activeTab !== "questions"}>
           <QuestionBank
+            onPracticeLockChange={setPracticeLocked}
+            onAttemptSaved={() => setReportRefresh(n => n + 1)}
+            onReports={() => setActiveTab("reports")}
             stories={stories}
             onOpenStory={(story) => {
               openStory(story);

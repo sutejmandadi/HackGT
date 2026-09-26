@@ -61,6 +61,7 @@ function CloudAuth({ children }: { children: (user: User | null) => ReactNode })
   }
 
   async function signOut() {
+    if (document.querySelector('[data-practice-locked="true"]')) { setMessage("Analyze or discard your recording before signing out."); return; }
     if (!window.confirm("Sign out? Save any current edits first; unsaved edits will be discarded.")) return;
     setBusy(true);
     try {

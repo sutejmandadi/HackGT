@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from schemas import STARInput, StrengthGridScore, BatchScoreRequest, BatchScoreResponse
 from strength_scorer import StrengthGridScorer
 from resume_routes import router as resume_router
+from practice_routes import router as practice_router
 
 app = FastAPI(
     title="Behavioral Interview AI Engine",
@@ -12,6 +13,7 @@ app = FastAPI(
 )
 
 app.include_router(resume_router)
+app.include_router(practice_router)
 
 # Enable CORS for Next.js frontend and local dev
 app.add_middleware(
