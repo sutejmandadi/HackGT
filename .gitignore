@@ -9,3 +9,7 @@ node_modules/
 dist/
 build/
 .DS_Store
+
+# Commit public configuration templates, never local values
+!.env.example
+__pycache__/
