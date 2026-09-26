@@ -139,6 +139,22 @@ function StoryBank({
     if (draftId) titleRef.current?.focus();
   }, [draftId]);
 
+  // Cmd+S or Ctrl+S to save story draft
+  useEffect(() => {
+    if (!draft) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "s") {
+        e.preventDefault();
+        const form = document.querySelector(".story-editor-form") as HTMLFormElement | null;
+        if (form && !busyRef.current) {
+          form.requestSubmit();
+        }
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [draft]);
+
   function openStory(story: Story) {
     if (busyRef.current) return;
     if (dirty && !window.confirm("Discard your unsaved edits?")) return;
@@ -845,16 +861,44 @@ function StoryBank({
 
                     <div className="star-sections-stack">
                       {storySections.map(({ key, label, prompt }, index) => {
-                        const hasVal = !!draft[key].trim();
+                        const val = draft[key];
+                        const hasVal = !!val.trim();
+                        const wordCount = (val.trim().match(/\S+/g) || []).length;
+                        const targets: Record<string, { min: number; max: number; tip: string }> = {
+                          situation: { min: 20, max: 45, tip: "Aim for 20–40 words (context)" },
+                          task: { min: 15, max: 35, tip: "Aim for 15–30 words (ownership)" },
+                          actions: { min: 60, max: 130, tip: "Aim for 60–120 words (core depth)" },
+                          result: { min: 20, max: 50, tip: "Aim for 20–45 words (outcome)" },
+                        };
+                        const target = targets[key] || { min: 20, max: 50, tip: "" };
+                        const wordStatus =
+                          wordCount === 0
+                            ? "empty"
+                            : wordCount >= target.min && wordCount <= target.max
+                            ? "optimal"
+                            : wordCount > target.max
+                            ? "warning"
+                            : "standard";
+
                         return (
                           <div className={`star-block ${hasVal ? "filled" : ""}`} key={key}>
                             <div className="star-block-badge">0{index + 1}</div>
                             <div className="star-block-content">
                               <div className="star-block-header">
                                 <span className="star-block-title">{label}</span>
-                                <span className={`star-status-pill ${hasVal ? "filled" : "to-do"}`}>
-                                  {hasVal ? "Filled" : "To develop"}
-                                </span>
+                                <div className="star-block-subheader">
+                                  {wordCount > 0 && (
+                                    <span
+                                      className={`word-count-badge ${wordStatus}`}
+                                      title={target.tip}
+                                    >
+                                      {wordCount} {wordCount === 1 ? "word" : "words"}
+                                    </span>
+                                  )}
+                                  <span className={`star-status-pill ${hasVal ? "filled" : "to-do"}`}>
+                                    {hasVal ? "Filled" : "To develop"}
+                                  </span>
+                                </div>
                               </div>
                               <span className="star-block-prompt">{prompt}</span>
                               <textarea
@@ -902,13 +946,18 @@ function StoryBank({
                           Cancel / Back
                         </button>
                       </div>
-                      <button
-                        className="raycast-btn-glow"
-                        type="submit"
-                        disabled={busy || !!storageError}
-                      >
-                        {busy ? "Saving Story…" : "Save Story"}
-                      </button>
+                      <div className="footer-right-buttons">
+                        <span className="shortcut-hint">
+                          <kbd className="qb-hotkey-badge">⌘S</kbd> to save
+                        </span>
+                        <button
+                          className="raycast-btn-glow"
+                          type="submit"
+                          disabled={busy || !!storageError}
+                        >
+                          {busy ? "Saving Story…" : "Save Story"}
+                        </button>
+                      </div>
                     </div>
                   </fieldset>
                 </form>
