@@ -34,7 +34,8 @@ class StrengthGridScorer:
                 r"\bpeer\w*", r"\bsupport\w*", r"\bcredit\b", r"\bempathy\b", r"\balign\w*"
             ],
             "weights": {"situation": 0.15, "task": 0.15, "action": 0.45, "result": 0.25},
-            "calib": {"min_sim": 0.22, "max_sim": 0.65},
+            "midpoint": 0.28,
+            "steepness": 13.0,
             "low_tip": "Highlight how you collaborated with others, resolved differing opinions, or supported your teammates."
         },
         "problem_solving": {
@@ -51,7 +52,8 @@ class StrengthGridScorer:
                 r"\boptimiz\w*", r"\btrade-off\w*", r"\bhypothes\w*", r"\bprofil\w*", r"\bengineer\w*"
             ],
             "weights": {"situation": 0.15, "task": 0.25, "action": 0.45, "result": 0.15},
-            "calib": {"min_sim": 0.24, "max_sim": 0.68},
+            "midpoint": 0.29,
+            "steepness": 13.0,
             "low_tip": "Detail the technical diagnosis, root cause analysis, or systematic steps you took to overcome the obstacle."
         },
         "failure": {
@@ -68,7 +70,8 @@ class StrengthGridScorer:
                 r"\boversight\w*", r"\bapologiz\w*", r"\bincident\w*", r"\brebound\w*", r"\bretrospect\w*"
             ],
             "weights": {"situation": 0.25, "task": 0.20, "action": 0.30, "result": 0.25},
-            "calib": {"min_sim": 0.20, "max_sim": 0.60},
+            "midpoint": 0.25,
+            "steepness": 14.0,
             "low_tip": "Include a candid vulnerability, mistake made, or unexpected setback, along with deep self-reflection and permanent safeguards put in place."
         },
         "leadership": {
@@ -85,7 +88,8 @@ class StrengthGridScorer:
                 r"\brally\w*", r"\bchampion\w*", r"\bspearhead\w*", r"\bownership\b"
             ],
             "weights": {"situation": 0.10, "task": 0.15, "action": 0.50, "result": 0.25},
-            "calib": {"min_sim": 0.22, "max_sim": 0.65},
+            "midpoint": 0.28,
+            "steepness": 13.0,
             "low_tip": "Highlight where you took initiative, made decisions, steered others, mentored team members, or showed proactive ownership."
         },
         "ambiguity": {
@@ -102,7 +106,8 @@ class StrengthGridScorer:
                 r"\bgreenfield\b", r"\bundefined\b", r"\bpivot\w*", r"\bprototyp\w*", r"\bexplor\w*"
             ],
             "weights": {"situation": 0.30, "task": 0.30, "action": 0.30, "result": 0.10},
-            "calib": {"min_sim": 0.20, "max_sim": 0.62},
+            "midpoint": 0.26,
+            "steepness": 14.0,
             "low_tip": "Emphasize how you operated without clear instructions, made smart bets under uncertainty, or defined unclear project requirements."
         }
     }
@@ -178,7 +183,6 @@ class StrengthGridScorer:
             cat_anchors = self.category_anchor_embeddings[cat_key]["all"]
             cat_mean = self.category_anchor_embeddings[cat_key]["mean"]
             weights = config["weights"]
-            calib = config["calib"]
             
             # Weighted section similarity
             weighted_sim = 0.0
@@ -203,13 +207,20 @@ class StrengthGridScorer:
             if cat_key == "failure" and signal_count == 0:
                 failure_penalty = 0.15
 
-            # Calibrate raw similarity to 0 - 100 percentage
-            min_s, max_s = calib["min_sim"], calib["max_sim"]
-            normalized = (combined_raw_sim - min_s) / (max_s - min_s)
-            normalized = float(np.clip(normalized + signal_boost - failure_penalty, 0.0, 1.0))
-            
-            # Apply smooth sigmoid curve for natural human-like grading
-            percentage = round(normalized * 100.0, 1)
+            # Calibrated Dynamic Sigmoid Rescaling
+            # Replaces the restrictive linear floor (which artificially deflated scores on specialized text)
+            # with an activation curve mapping real-world candidate responses to intuitive human rating bands.
+            midpoint = config.get("midpoint", 0.28)
+            steepness = config.get("steepness", 13.0)
+
+            # Combine similarity with lexical signal boost and failure penalty
+            effective_score = combined_raw_sim + signal_boost - failure_penalty
+
+            # Logistic sigmoid activation
+            calibrated_prob = 1.0 / (1.0 + np.exp(-steepness * (effective_score - midpoint)))
+
+            # Scale to percentage 0.0 - 100.0%
+            percentage = round(float(np.clip(calibrated_prob * 100.0, 0.0, 100.0)), 1)
 
             # Confidence score
             confidence = round(float(np.clip(0.70 + (combined_raw_sim * 0.4), 0.70, 0.98)), 2)
