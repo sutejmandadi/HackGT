@@ -19,11 +19,23 @@ You and Sutej should configure the same Supabase project. Application user accou
 
 ## 2. Create the table and its security policies
 
-In Supabase's SQL Editor, paste and run the contents of:
+Use the CLI from the repository root so schema changes are recorded in migration history:
 
-`supabase/migrations/001_stories.sql`
+```powershell
+npx.cmd supabase login --output-format text --agent no
+npx.cmd supabase link --project-ref YOUR_PROJECT_REF
+npx.cmd supabase migration list
+npx.cmd supabase db push --dry-run
+npx.cmd supabase db push
+```
 
-Run this migration once against a new project. It intentionally fails rather than silently replacing an existing `stories` schema. If a table already exists, inspect it and create a separate migration rather than dropping it.
+Our shared development project ref is `qwgcakpnkholcpqvmbdg`. Each teammate links their own checkout. Never commit access tokens or database passwords.
+
+For a new, empty project this applies both migrations. For the existing shared project, migrations 001 and 002 were already applied manually and their history was reconciled on 2026-09-26 after verifying the columns, constraints, index, trigger, grants, and owner-only policies. Do not rerun the initial SQL in the dashboard.
+
+If a different project reports "relation stories already exists", inspect its schema and migration history first. Only when the changes in a migration are already present should you record it with `npx.cmd supabase migration repair VERSION --status applied`. Repair changes tracking records only; it does not apply missing schema or security policies. Do not reset or drop a populated database to resolve this error.
+
+For future changes, run `npx.cmd supabase migration new descriptive_name`, put the SQL in the generated file, and commit it. Coordinate one deployment path: use the configured GitHub integration, or have one teammate run `db push`. Avoid manually running migration files in the dashboard because that bypasses history.
 
 The SQL creates the table, owner index, server-maintained update timestamps, restricted table grants, and owner-only SELECT/INSERT/UPDATE/DELETE policies. Anonymous clients have no table access. Never disable RLS to fix an access error.
 
@@ -115,7 +127,7 @@ The code can be linted/typechecked without credentials, but cloud authentication
 
 ## Existing projects: remove the review checkbox field
 
-If you already ran 001_stories.sql before this change, run supabase/migrations/002_remove_story_confirmation.sql in the SQL Editor. Do not rerun 001. This removes only the retired user_confirmed column; stories and their other fields are preserved.
+Migration 002 removes only the retired user_confirmed column. Deploy it through the CLI or GitHub integration, as described above. It is already applied and tracked in the shared project.
 
 
 ## MeCode strength matrix
