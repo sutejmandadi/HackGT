@@ -25,7 +25,7 @@ async def configuration(request: Request):
         mode=provider_name()
         return {'mode':mode,'ready':True}
     except ValueError as exc:
-        return {'mode':os.getenv('PRACTICE_PROVIDER','deepgram'),'ready':False,'message':str(exc)}
+        return {'mode':os.getenv('PRACTICE_PROVIDER','local'),'ready':False,'message':str(exc)}
 
 @router.get('/api/practice')
 async def list_attempts(request: Request, offset: int=0):
@@ -81,7 +81,7 @@ async def submit(request: Request):
             scorer=getattr(request.app.state,'scorer',None)
             m,a=await run_in_threadpool(analyze,segments,duration,meta.prompt,meta.competency,getattr(scorer,'model',None),activity,provider=='mock')
             report=Report(**meta.model_dump(mode='json'),created_at=datetime.now(timezone.utc).isoformat(),duration=duration,
-                transcript=' '.join(s.text for s in segments),segments=segments,metrics=m,analysis=a,is_mock=provider=='mock')
+                transcript=' '.join(s.text for s in segments),segments=segments,metrics=m,analysis=a,is_mock=provider=='mock',pipeline_version='interview-mri-1.0-local-base.en' if provider=='local' else 'interview-mri-1.0')
             yield event('stage',{'stage':'Saving report'})
             saved=await store.finish(report) if store else report.model_dump(mode='json')
             yield event('result',{'report':saved,'local':store is None})

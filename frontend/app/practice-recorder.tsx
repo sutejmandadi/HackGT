@@ -111,8 +111,9 @@ export default function PracticeRecorder({question,linkedStoryId,onLock,onSaved,
   return <section className="practice-recorder" aria-label="Record an interview response" data-practice-locked={locked}>
     <div className="section-heading"><h3>Record your answer</h3><span>{seconds(elapsed)} / 5:00</span></div>
     {provider?.mode==='mock' && <p className="resume-warning">Sample mode: you can record and replay, but analysis uses example text. Connect live transcription to get feedback on your own answer.</p>}
+    {provider?.mode==='local' && provider.ready && <p className="muted">Local transcription · No API key required</p>}
     {provider && !provider.ready && <p className="resume-warning">{provider.message} You can still record and replay your answer.</p>}
-    <details><summary>Audio privacy</summary><p className="muted">Audio is sent to the configured transcription provider when you analyze. MeCode deletes temporary audio and saves the transcript and coaching report. English transcription · 12 MB maximum.</p></details>
+    <details><summary>Audio privacy</summary><p className="muted">{provider?.mode==='local' ? 'Audio is transcribed on the computer running the backend, without an external transcription service.' : 'Audio is sent to the configured transcription provider when you analyze.'} MeCode deletes temporary audio and saves the transcript and coaching report. English transcription · 12 MB maximum.</p></details>
     <div className="audio-level" role="meter" aria-label="Microphone level" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(level*100)}><span style={{width:`${level*100}%`}} /></div>
     <div className="practice-controls">
       {state==="idle" && <button className="primary" onClick={start}>Start recording</button>}

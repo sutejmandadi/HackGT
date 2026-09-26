@@ -17,3 +17,6 @@ __pycache__/
 # Supabase CLI local project metadata
 /supabase/.temp/
 /supabase/.branches/
+
+# Downloaded local speech models
+backend/.models/

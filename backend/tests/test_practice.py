@@ -103,6 +103,20 @@ class MetricsTests(unittest.TestCase):
         with patch.dict(os.environ,{'PRACTICE_PROVIDER':'mock','PRACTICE_ALLOW_MOCK':'true','APP_ENV':'production'}):
             with self.assertRaises(ValueError):provider_name()
 
+    def test_local_worker_timeout(self):
+        import subprocess
+        from practice_audio import transcribe_local
+        with patch('practice_audio.subprocess.run',side_effect=subprocess.TimeoutExpired('worker',150)):
+            with self.assertRaisesRegex(ValueError,'shorter answer'):
+                transcribe_local(wav(),3)
+
+    def test_local_worker_bad_output(self):
+        from practice_audio import transcribe_local
+        from types import SimpleNamespace
+        with patch('practice_audio.subprocess.run',return_value=SimpleNamespace(returncode=0,stdout='invalid')):
+            with self.assertRaisesRegex(ValueError,'invalid data'):
+                transcribe_local(wav(),3)
+
     def test_mock_provider(self):
         segments=asyncio.run(transcribe(b'',60,'mock'))
         self.assertEqual(len(segments),5)

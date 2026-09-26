@@ -209,3 +209,20 @@ relevance; and outcome detail, measurement, learning and causal links. Short sec
 mentions and repeated keywords no longer earn full credit. The report includes
 the exact formula. This remains an uncalibrated coaching heuristic. Existing reports
 retain their original rubric and cannot be compared across rubric versions.
+
+
+## Free local voice analysis (default)
+
+Install backend requirements, then run `python local_transcription.py --download`
+from `backend` once. Set `PRACTICE_PROVIDER=local` and `PRACTICE_ALLOW_MOCK=false`
+in backend/.env and restart the backend. No API key or paid account is required.
+The base.en model runs via faster-whisper on CPU with int8 weights and word timestamps.
+Model files live in ignored backend/.models. Download requires internet; inference
+does not. Supabase report saving still requires internet. On a deployed site,
+transcription runs on the server, so hosting resources may cost money.
+
+Each recording is processed in a bounded worker process (150-second timeout), with
+temporary audio removed afterward. If processing times out, retry a shorter answer.
+Silence detection reduces hallucinations, but review every transcript. Whisper may
+omit fillers, so filler counts are estimates. Local reports have a distinct pipeline
+version to avoid comparing their transcription metrics with another provider.

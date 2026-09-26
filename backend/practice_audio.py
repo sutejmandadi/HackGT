@@ -1,4 +1,7 @@
 import io
+import asyncio
+import json
+import sys
 import os
 import subprocess
 import tempfile
@@ -43,12 +46,16 @@ def normalize(data: bytes):
     return wav, duration, {"active_seconds":round(active,2),"quiet_seconds":round(duration-active,2),"method":"20ms RMS energy gate; may include noise and miss quiet speech, not precise articulation/silence"}
 
 def provider_name():
-    name = os.getenv('PRACTICE_PROVIDER','deepgram')
+    name = os.getenv('PRACTICE_PROVIDER','local')
     if name == 'mock':
         if os.getenv('APP_ENV') == 'production' or os.getenv('PRACTICE_ALLOW_MOCK') != 'true':
             raise ValueError('Mock transcription is disabled. Enable PRACTICE_ALLOW_MOCK=true only for local testing.')
+    elif name == 'local':
+        from local_transcription import MODEL_DIR
+        if not (MODEL_DIR/'model.bin').exists():
+            raise ValueError('Download the local model first: run python local_transcription.py --download from backend.')
     elif name != 'deepgram':
-        raise ValueError('Set PRACTICE_PROVIDER=deepgram (or mock for local tests).')
+        raise ValueError('Set PRACTICE_PROVIDER=local or deepgram (or mock for local tests).')
     elif not os.getenv('DEEPGRAM_API_KEY'):
         raise ValueError('Transcription is not configured. Add DEEPGRAM_API_KEY to backend/.env and restart the backend. Your recording is still available to retry.')
     return name
@@ -72,7 +79,26 @@ def segment_words(items, duration):
     if group: groups.append(group)
     return [Segment(index=i,start=g[0].start,end=g[-1].end,text=' '.join(w.text for w in g),words=g) for i,g in enumerate(groups)]
 
+def transcribe_local(wav, duration):
+    with tempfile.TemporaryDirectory(prefix='mecode-local-') as folder:
+        source=Path(folder)/'answer.wav'
+        source.write_bytes(wav)
+        try:
+            result=subprocess.run([sys.executable,str(Path(__file__).with_name('local_transcription.py')),str(source)],
+                capture_output=True,timeout=150,encoding='utf-8')
+        except subprocess.TimeoutExpired as exc:
+            raise ValueError('Local transcription took too long. Retry with a shorter answer; your recording is preserved.') from exc
+        if result.returncode:
+            raise ValueError('Local transcription failed. Check the model installation and retry; your recording is preserved.')
+        try:
+            items=json.loads(result.stdout)
+        except (ValueError,TypeError) as exc:
+            raise ValueError('Local transcription returned invalid data. Please retry.') from exc
+    return segment_words(items,duration)
+
 async def transcribe(wav, duration, provider):
+    if provider == 'local':
+        return await asyncio.to_thread(transcribe_local,wav,duration)
     if provider == 'mock':
         phrases = [
             'During our launch, the team faced a backlog of customer requests.',
