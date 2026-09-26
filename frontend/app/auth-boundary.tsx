@@ -5,10 +5,19 @@ import { type User } from "@supabase/supabase-js";
 import { cloudConfigured, getSupabase } from "./supabase";
 import LandingPage from "./landing-page";
 
+export interface AuthActions {
+  signOut?: () => Promise<void>;
+  openSignIn?: () => void;
+}
+
 export default function AuthBoundary({
   children,
 }: {
-  children: (user: User | null, onNavigateLanding: () => void) => ReactNode;
+  children: (
+    user: User | null,
+    onNavigateLanding: () => void,
+    authActions?: AuthActions
+  ) => ReactNode;
 }) {
   const [guestMode, setGuestMode] = useState(false);
   const [guestViewingLanding, setGuestViewingLanding] = useState(false);
@@ -31,24 +40,12 @@ export default function AuthBoundary({
     }
     return (
       <>
-        <div className="connection-banner">
-          <span>Demo mode · Saved in local browser storage</span>
-          <button className="text-button" onClick={() => setGuestViewingLanding(true)}>
-            Landing page
-          </button>
-          {cloudConfigured && (
-            <button
-              className="text-button"
-              onClick={() => {
-                setGuestMode(false);
-                setGuestViewingLanding(false);
-              }}
-            >
-              Sign in to sync across devices
-            </button>
-          )}
-        </div>
-        {children(null, () => setGuestViewingLanding(true))}
+        {children(null, () => setGuestViewingLanding(true), {
+          openSignIn: () => {
+            setGuestMode(false);
+            setGuestViewingLanding(false);
+          },
+        })}
       </>
     );
   }
@@ -87,7 +84,11 @@ function CloudAuth({
   children,
   onContinueGuest,
 }: {
-  children: (user: User | null, onNavigateLanding: () => void) => ReactNode;
+  children: (
+    user: User | null,
+    onNavigateLanding: () => void,
+    authActions?: AuthActions
+  ) => ReactNode;
   onContinueGuest: () => void;
 }) {
   const [user, setUser] = useState<User | null>(null);
@@ -256,17 +257,9 @@ function CloudAuth({
   if (user) {
     return (
       <>
-        <div className="connection-banner">
-          <span>Cloud storage · {user.email}</span>
-          <button className="text-button" onClick={() => setViewingLanding(true)}>
-            Landing page
-          </button>
-          <button className="text-button" disabled={busy} onClick={signOut}>
-            Sign out
-          </button>
-          {message && <span role="alert">{message}</span>}
-        </div>
-        {children(user, () => setViewingLanding(true))}
+        {children(user, () => setViewingLanding(true), {
+          signOut,
+        })}
       </>
     );
   }

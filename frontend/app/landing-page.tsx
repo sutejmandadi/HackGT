@@ -183,7 +183,7 @@ export default function LandingPage({
                   className="raycast-btn-primary"
                   onClick={onOpenWorkspace}
                 >
-                  Open Workspace →
+                  Open Workspace
                 </button>
               </>
             ) : guestActive ? (
@@ -198,7 +198,7 @@ export default function LandingPage({
                   className="raycast-btn-primary"
                   onClick={onOpenWorkspace}
                 >
-                  Return to Workspace →
+                  Return to Workspace
                 </button>
               </>
             ) : (
@@ -213,7 +213,7 @@ export default function LandingPage({
                   className="raycast-btn-primary"
                   onClick={() => openAuth(true)}
                 >
-                  Get Started →
+                  Get Started
                 </button>
               </>
             )}
@@ -236,8 +236,7 @@ export default function LandingPage({
         >
           <span className="raycast-badge">
             <span className="raycast-badge-dot" />
-            ✦ Next-Gen Behavioral Interview Intelligence
-            <span className="raycast-badge-replay" aria-hidden="true">↻</span>
+            Next-Gen Behavioral Interview Intelligence
           </span>
         </div>
 
@@ -267,7 +266,7 @@ export default function LandingPage({
                 className="raycast-btn-glow"
                 onClick={onOpenWorkspace}
               >
-                Open Your Workspace <span className="raycast-arrow">→</span>
+                Open Your Workspace
               </button>
               <a
                 href="#demo-preview"
@@ -282,7 +281,7 @@ export default function LandingPage({
                 className="raycast-btn-glow"
                 onClick={onOpenWorkspace}
               >
-                Return to Workspace <span className="raycast-arrow">→</span>
+                Return to Workspace
               </button>
               <button
                 className="raycast-btn-secondary"
@@ -297,7 +296,7 @@ export default function LandingPage({
                 className="raycast-btn-glow"
                 onClick={() => openAuth(true)}
               >
-                Start Free with Cloud Sync <span className="raycast-arrow">→</span>
+                Start Free with Cloud Sync
               </button>
               <button
                 className="raycast-btn-secondary"
@@ -320,20 +319,19 @@ export default function LandingPage({
             }}
             title="Sign up to access 50 Big-Tech questions"
           >
-            ⚡ 50 Curated Big-Tech Prompts
+            50 Curated Big-Tech Prompts
           </button>
           <span className="raycast-pill-dot">•</span>
-          <span className="raycast-pill-item">🎯 ML Strength Rubric</span>
+          <span className="raycast-pill-item">ML Strength Rubric</span>
           <span className="raycast-pill-dot">•</span>
-          <span className="raycast-pill-item">📄 PDF Resume Autofill</span>
+          <span className="raycast-pill-item">PDF Resume Autofill</span>
           <span className="raycast-pill-dot">•</span>
-          <span className="raycast-pill-item">⏱ 2-Min Practice Stopwatch</span>
+          <span className="raycast-pill-item">2-Min Practice Stopwatch</span>
         </div>
 
         {/* Raycast-style Interactive Command Bar & Story Preview */}
         <div id="demo-preview" className="raycast-launcher-window raycast-phase-launcher" style={{ animationDelay: "1280ms" }}>
           <div className="raycast-launcher-bar">
-            <span className="raycast-search-icon">⌘</span>
             <input
               type="text"
               className="raycast-search-input"
@@ -439,9 +437,9 @@ export default function LandingPage({
 
           <div className="raycast-launcher-footer">
             <div className="raycast-footer-left">
-              <span>↑↓ Navigate</span>
-              <span>↵ Open Story</span>
-              <span>⌘K Actions</span>
+              <span>Navigate with arrows</span>
+              <span>Open Story</span>
+              <span>Actions</span>
             </div>
             <div className="raycast-footer-right">
               <span>ML Scorer: all-MiniLM-L6-v2 active</span>
@@ -461,7 +459,7 @@ export default function LandingPage({
         <div className="raycast-bento-grid">
           {/* Card 1 */}
           <div className="raycast-bento-card span-2">
-            <div className="raycast-bento-icon">🧠</div>
+            <span className="raycast-bento-num">01 · RUBRIC</span>
             <h3>ML Strength Matrix</h3>
             <p>
               Uses deep semantic similarity embeddings (SentenceTransformers) against benchmark interview rubrics to score your stories from 0% to 100% across Teamwork, Problem Solving, Failure, Leadership, and Ambiguity.
@@ -494,19 +492,19 @@ export default function LandingPage({
             }}
             title={currentUser ? "Open questions in workspace" : "Sign up to unlock all 50 questions"}
           >
-            <div className="raycast-bento-icon">⚡</div>
+            <span className="raycast-bento-num">02 · PROMPTS</span>
             <h3>50 Big-Tech Questions</h3>
             <p>
               Curated behavioral prompts asked by Google, Meta, Apple, and Amazon. Filter by competency or search by concept.
             </p>
             <span className="raycast-card-action-link">
-              {currentUser ? "Open in workspace →" : "Sign up to practice →"}
+              {currentUser ? "Open in workspace" : "Sign up to practice"}
             </span>
           </div>
 
           {/* Card 3 */}
           <div className="raycast-bento-card">
-            <div className="raycast-bento-icon">⏱</div>
+            <span className="raycast-bento-num">03 · DRILL</span>
             <h3>Mock Drill Stopwatch</h3>
             <p>
               Practice speaking your answers aloud with a built-in 90–120s sweet-spot timer, response scratchpad, and mental STAR checklist.
@@ -515,7 +513,7 @@ export default function LandingPage({
 
           {/* Card 4 */}
           <div className="raycast-bento-card span-2">
-            <div className="raycast-bento-icon">📄</div>
+            <span className="raycast-bento-num">04 · PARSER</span>
             <h3>PDF Resume-to-STAR Autofill</h3>
             <p>
               Upload your resume PDF. MeCode extracts your projects and bullet points, organizing raw experience into reviewable, editable STAR outlines with zero manual copy-pasting.
@@ -532,16 +530,16 @@ export default function LandingPage({
           <div className="raycast-bottom-btns">
             {currentUser ? (
               <button className="raycast-btn-glow" onClick={onOpenWorkspace}>
-                Go to Your Workspace →
+                Go to Your Workspace
               </button>
             ) : guestActive ? (
               <button className="raycast-btn-glow" onClick={onOpenWorkspace}>
-                Return to Your Workspace →
+                Return to Your Workspace
               </button>
             ) : (
               <>
                 <button className="raycast-btn-glow" onClick={() => openAuth(true)}>
-                  Create Your Free Account →
+                  Create Your Free Account
                 </button>
                 <button className="raycast-btn-secondary" onClick={onContinueGuest}>
                   Launch Demo Workspace
@@ -579,7 +577,7 @@ export default function LandingPage({
               onClick={() => setAuthOpen(false)}
               aria-label="Close modal"
             >
-              ✕
+              Close
             </button>
 
             <div className="raycast-modal-header">
