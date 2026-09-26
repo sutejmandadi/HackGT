@@ -193,3 +193,19 @@ The suite intercepts Supabase requests in its isolated browser context and uses
 in-memory report storage. It does not create real accounts or reports. It prints
 the temporary folder containing desktop/mobile screenshots. Stop the isolated
 port 8001 test server afterward; the normal backend uses port 8000.
+
+
+## Report UI and rubric 2.0
+
+Reports now open as compact question groups, with no report automatically expanded.
+Select an attempt to view it; Close report returns to the compact list. Progress,
+transcript analysis, and detailed coaching are expandable. Sample reports hide
+scores and pacing because synthetic timestamps cannot measure a user's delivery.
+Mock/demo/fixture all refer to the same fixed example transcript, not live recognition.
+
+New reports use coaching-2.0: continuous pace scoring; STAR coverage, balance and
+order; bounded personal-action, reasoning and verification signals; word-weighted
+relevance; and outcome detail, measurement, learning and causal links. Short section
+mentions and repeated keywords no longer earn full credit. The report includes
+the exact formula. This remains an uncalibrated coaching heuristic. Existing reports
+retain their original rubric and cannot be compared across rubric versions.

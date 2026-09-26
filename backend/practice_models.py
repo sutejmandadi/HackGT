@@ -3,7 +3,7 @@ from uuid import UUID
 from pydantic import BaseModel, Field, ConfigDict, model_validator
 
 PIPELINE = "interview-mri-1.0"
-RUBRIC = "coaching-1.0"
+RUBRIC = "coaching-2.0"
 STAR = Literal["situation", "task", "actions", "result", "unknown"]
 
 class Metadata(BaseModel):

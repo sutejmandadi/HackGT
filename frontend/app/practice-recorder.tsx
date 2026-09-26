@@ -110,9 +110,9 @@ export default function PracticeRecorder({question,linkedStoryId,onLock,onSaved,
   }
   return <section className="practice-recorder" aria-label="Record an interview response" data-practice-locked={locked}>
     <div className="section-heading"><h3>Record your answer</h3><span>{seconds(elapsed)} / 5:00</span></div>
-    {provider?.mode==='mock' && <p className="resume-warning">Demo mode: recording and report saving work, but the transcript is a synthetic example, not your spoken words. Demo reports are excluded from progress insights.</p>}
+    {provider?.mode==='mock' && <p className="resume-warning">Sample mode: you can record and replay, but analysis uses example text. Connect live transcription to get feedback on your own answer.</p>}
     {provider && !provider.ready && <p className="resume-warning">{provider.message} You can still record and replay your answer.</p>}
-    <p className="muted">Audio is sent to the configured transcription provider when you analyze. MeCode deletes temporary audio and saves the transcript and coaching report. English transcription · 12 MB maximum.</p>
+    <details><summary>Audio privacy</summary><p className="muted">Audio is sent to the configured transcription provider when you analyze. MeCode deletes temporary audio and saves the transcript and coaching report. English transcription · 12 MB maximum.</p></details>
     <div className="audio-level" role="meter" aria-label="Microphone level" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(level*100)}><span style={{width:`${level*100}%`}} /></div>
     <div className="practice-controls">
       {state==="idle" && <button className="primary" onClick={start}>Start recording</button>}
@@ -123,6 +123,6 @@ export default function PracticeRecorder({question,linkedStoryId,onLock,onSaved,
     <p role="status" aria-live="polite">{state==="requesting"?"Waiting for microphone permission…":state==="recording"?"Recording. Speak naturally; pauses are part of your response.":state==="paused"?"Paused. Paused time is excluded from the recording.":state==="busy"?`${stage}…`:state==="review"?"Review or replay the recording, then analyze or discard it before switching questions.":stage}</p>
     {error && <p className="error" role="alert">{error}</p>}
     {url && <audio controls src={url} aria-label="Review your recording" />}
-    {report && <><button className="text-button" onClick={onReports}>Open saved Reports</button><InterviewReport attempt={report} audioUrl={url} /></>}
+    {report && <><button className="text-button" onClick={onReports}>Open saved Reports</button><details className="saved-preview"><summary>View report</summary><InterviewReport attempt={report} audioUrl={url} /></details></>}
   </section>;
 }

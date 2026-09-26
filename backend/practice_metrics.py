@@ -108,21 +108,45 @@ def semantic(segments, prompt, competency, model):
     return method
 
 def score_components(m, segments):
-    # Coaching targets, not validated predictors of interview success.
-    wpm = m['wpm']
-    pace = max(0, 100 - max(110-wpm, wpm-170, 0)*1.2)
-    delivery = max(0, .65*pace + .35*max(0, 100-m['filler_rate']*10))
-    structure = sum(25 for k in KEYS[:4] if m['star'][k]['words'] >= 5)
-    specificity = min(100, 25*sum(s.evidence for s in segments) + 15*sum(bool(DECISION.search(s.text)) for s in segments))
-    relevance_values = [s.relevance for s in segments if s.relevance is not None]
-    relevance = max(0,min(100, sum(relevance_values)/len(relevance_values)*200)) if relevance_values else None
-    results = [s for s in segments if s.star == 'result']
-    impact = min(100, (40 if results else 0) + (40 if any(s.evidence for s in results) else 0) + (20 if any(re.search(r'learned|next time|lesson',s.text,re.I) for s in results) else 0))
-    scores = {"Delivery": round(delivery,1), "Structure": structure, "Specificity": specificity, "Impact": impact}
-    if relevance is not None:
-        scores['Relevance'] = round(relevance,1)
-    scores['Overall'] = round(sum(scores.values())/len(scores),1)
+    # Continuous, bounded evidence factors. Repeating keywords cannot add points.
+    def clamp(value): return max(0.0, min(1.0, value))
+    n = max(m['total_words'], 1)
+    pace = clamp(1 - abs(m['wpm']-145)/100)
+    fluency = clamp(1-m['filler_rate']/8)
+    gap_ratio = sum(p['seconds'] for p in m['pauses'] if p['long'])/max(m['duration'],1)
+    delivery = 100*(.5*pace + .3*fluency + .2*clamp(1-gap_ratio/.3))
+    target = {'situation':.15,'task':.10,'actions':.50,'result':.25}
+    coverage = sum(clamp(m['star'][k]['words']/minimum) for k,minimum in
+                   [('situation',12),('task',10),('actions',30),('result',18)])/4
+    balance = sum(min(m['star'][k]['percent']/100,share) for k,share in target.items())
+    order = [KEYS.index(s.star) for s in segments if s.star!='unknown']
+    sequence = clamp(1-sum(b<a for a,b in zip(order,order[1:]))/max(len(order)-1,1))
+    structure = 100*(.5*coverage+.35*balance+.15*sequence)*coverage
+    actions = ' '.join(s.text for s in segments if s.star=='actions')
+    personal = bool(OWN.search(actions))
+    reasoning = bool(DECISION.search(actions))
+    verification = bool(re.search(r'\b(?:tested|measured|verified|validated|compared)\b',actions,re.I))
+    concrete = clamp(sum(len(words(s.text)) for s in segments if s.evidence)/n/.35)
+    precision = clamp(1-sum(len(words(s.text)) for s in segments if s.vague)/n)
+    specificity = 100*(.25*personal+.25*reasoning+.2*verification+.2*concrete+.1*precision)
+    specificity *= clamp(len(words(actions))/30)*(1-min(.5,m['redundancy_ratio']))
+    relevance_values = [(s.relevance,len(words(s.text))) for s in segments if s.relevance is not None]
+    relevance = None
+    if relevance_values:
+        mean = sum(v*w for v,w in relevance_values)/max(1,sum(w for _,w in relevance_values))
+        relevance = 100*clamp((mean-.05)/.70)
+    results = ' '.join(s.text for s in segments if s.star=='result')
+    outcome = bool(re.search(r'\b(?:reduced|increased|improved|achieved|delivered|resolved|saved|completed|launched|adopted|passed|prevented)\b',results,re.I))
+    measure = bool(NUMBER.search(results))
+    learning = bool(re.search(r'\b(?:learned|next time|lesson)\b',results,re.I))
+    causal = bool(re.search(r'\b(?:because|enabled|allowed|led to|as a result)\b',results,re.I))
+    impact = 100*(.35*outcome+.25*measure+.2*learning+.2*causal)*clamp(len(words(results))/25)
+    scores = {'Delivery':round(delivery,1),'Structure':round(structure,1),
+              'Specificity':round(specificity,1),'Impact':round(impact,1)}
+    if relevance is not None: scores['Relevance']=round(relevance,1)
+    scores['Overall']=round(sum(scores.values())/len(scores),1)
     return scores
+
 
 def analyze(segments, duration, prompt, competency, model=None, activity=None, is_mock=False):
     method = semantic(segments, prompt, competency, model)
@@ -175,7 +199,7 @@ def analyze(segments, duration, prompt, competency, model=None, activity=None, i
     backwards = sum(b<a for a,b in zip(ordering,ordering[1:]))
     analysis = Analysis(
         scores=scores,
-        score_explanation=f"{RUBRIC}: Overall is the equal mean of available subscores. Delivery = 65% pace (110–170 WPM coaching target, 1.2 points lost per WPM outside) + 35% filler control (100 minus 10 × fillers/minute). Structure = 25 per detected STAR section with ≥5 words. Specificity = 25 per segment with a numeric mention + 15 per segment with a decision/verification cue, capped at 100. Relevance = mean local semantic similarity ×200, clipped to 0–100; omitted if unavailable. Impact = 40 for a Result, 40 for numeric Result detail, 20 for a Result lesson. This heuristic rubric is not a hiring assessment.",
+        score_explanation="Overall averages the available category scores. Delivery weights pace around 145 WPM (50%), filler control (30%), and long-gap control (20%). Structure combines meaningful STAR coverage (50%), a 15/10/50/25 time balance (35%), and section order (15%), scaled by coverage. Specificity rewards personal actions (25%), reasoning (25%), verification (20%), concrete detail (20%), and precise wording (10%), scaled by action depth and repetition. Relevance uses word-weighted semantic similarity, mapped from 0.05–0.75 to 0–100; it is omitted when unavailable. Impact rewards an observable outcome (35%), a measure (25%), learning (20%), and a causal link (20%), scaled by result detail. Targets are adjustable coaching heuristics, not validated hiring standards.",
         summary=improvements[0].text,
         strengths=strengths[:2], improvements=improvements[:3], exercise="Record another answer using four short beats: context, your responsibility, your decision and reason, then the observable outcome. " + improvements[0].text,
         outline=[{"section":k, "segments":[s.index for s in by_star[k]], "prompt":p} for k,p in zip(KEYS[:4],['One sentence: what problem mattered?','One sentence: what did you own?','Two sentences: what did you decide, do, and verify?','One sentence: what changed or what did you learn?'])],

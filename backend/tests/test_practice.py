@@ -36,6 +36,19 @@ class MetricsTests(unittest.TestCase):
         self.assertEqual(m['wpm'],6)
         self.assertEqual(m['speaking_wpm'],12)
 
+    def test_segment_pace_varies_with_actual_timestamps(self):
+        slow=segment('I built a service.',step=.8)
+        fast=segment('I tested the service.',start=4,step=.3,index=1)
+        metrics([slow,fast],6)
+        self.assertEqual(slow.wpm,75)
+        self.assertEqual(fast.wpm,200)
+
+    def test_short_star_mentions_do_not_get_full_credit(self):
+        sections=[segment('One two three four five',start=i*3,section=k,index=i)
+                  for i,k in enumerate(['situation','task','actions','result'])]
+        m=metrics(sections,12)
+        self.assertLess(score_components(m,sections)['Structure'],50)
+
     def test_filler_precision(self):
         s=segment('Um, I like coding. It looks like rain. Uh, you know, I mean, like, really.')
         detected=fill(s)
@@ -54,8 +67,8 @@ class MetricsTests(unittest.TestCase):
         s.evidence=True;s.relevance=.4
         m=metrics([s],6)
         scores=score_components(m,[s])
-        self.assertEqual(scores['Specificity'],40)
-        self.assertEqual(scores['Relevance'],80)
+        self.assertLess(scores['Specificity'],70)
+        self.assertEqual(scores['Relevance'],50)
         self.assertAlmostEqual(scores['Overall'],round(sum(v for k,v in scores.items() if k!='Overall')/5,1))
 
     def test_no_empty_results_invented(self):
