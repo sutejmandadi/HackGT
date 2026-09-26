@@ -5,7 +5,9 @@ import { missingSections, storySections, type Story } from "./story";
 
 import AuthBoundary from "./auth-boundary";
 import StrengthMatrix from "./strength-matrix";
+import QuestionBank from "./question-bank";
 import ResumeImport, { resumeIdentity } from "./resume-import";
+import type { BehavioralQuestion } from "./questions";
 import { LOCAL_STORIES_KEY, readLocalStories, listStories, saveStory, deleteStory, importLocalStories, saveResumeStories } from "./story-repository";
 const emptyStory = (): Story => ({
   id: crypto.randomUUID(), title: "", organization: "", role: "",
@@ -26,7 +28,7 @@ function StoryBank({ ownerId }: { ownerId?: string }) {
     try { return { stories: readLocalStories(), error: "" }; }
     catch { return { stories: [] as Story[], error: "Browser stories could not be read. Existing data is preserved. Reload after restoring storage access." }; }
   });
-  const [activeTab, setActiveTab] = useState<"stories" | "matrix">("stories");
+  const [activeTab, setActiveTab] = useState<"stories" | "matrix" | "questions">("stories");
   const [stories, setStories] = useState<Story[]>(initial.stories);
   const [ready, setReady] = useState(!ownerId);
   const [storageError, setStorageError] = useState(initial.error);
@@ -147,14 +149,69 @@ function StoryBank({ ownerId }: { ownerId?: string }) {
       <header className="topbar"><div className="brand"><span className="brand-icon">m.</span> MeCode</div><span className="workspace-label">Interview workspace</span></header>
       <main className="bank-main">
         <div className="workspace-tabs" role="tablist" aria-label="MeCode workspace">
-          {(["stories", "matrix"] as const).map((tab) => <button key={tab} id={`${tab}-tab`} role="tab" aria-selected={activeTab === tab} aria-controls={`${tab}-panel`} tabIndex={activeTab === tab ? 0 : -1} onClick={() => setActiveTab(tab)} onKeyDown={(event) => {
-            if (["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) {
-              event.preventDefault();
-              const next = event.key === "Home" ? "stories" : event.key === "End" ? "matrix" : activeTab === "stories" ? "matrix" : "stories";
-              setActiveTab(next); document.getElementById(`${next}-tab`)?.focus();
-            }
-          }}>{tab === "stories" ? "Stories" : "Strength matrix"}</button>)}
+          {([
+            { id: "stories", label: "Stories" },
+            { id: "matrix", label: "Strength matrix" },
+            { id: "questions", label: "Question bank (50)" },
+          ] as const).map(({ id: tab, label }) => (
+            <button
+              key={tab}
+              id={`${tab}-tab`}
+              role="tab"
+              aria-selected={activeTab === tab}
+              aria-controls={`${tab}-panel`}
+              tabIndex={activeTab === tab ? 0 : -1}
+              onClick={() => setActiveTab(tab)}
+              onKeyDown={(event) => {
+                if (["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) {
+                  event.preventDefault();
+                  const tabs = ["stories", "matrix", "questions"] as const;
+                  const cur = tabs.indexOf(activeTab);
+                  const next =
+                    event.key === "Home"
+                      ? tabs[0]
+                      : event.key === "End"
+                      ? tabs[tabs.length - 1]
+                      : event.key === "ArrowRight"
+                      ? tabs[(cur + 1) % tabs.length]
+                      : tabs[(cur - 1 + tabs.length) % tabs.length];
+                  setActiveTab(next);
+                  document.getElementById(`${next}-tab`)?.focus();
+                }
+              }}
+            >
+              {label}
+            </button>
+          ))}
         </div>
+        <section id="questions-panel" role="tabpanel" aria-labelledby="questions-tab" hidden={activeTab !== "questions"}>
+          <QuestionBank
+            stories={stories}
+            onOpenStory={(story) => {
+              openStory(story);
+              setActiveTab("stories");
+            }}
+            onDraftForQuestion={(question: BehavioralQuestion) => {
+              if (dirty && !window.confirm("Discard your unsaved edits?")) return;
+              const newDraft: Story = {
+                id: crypto.randomUUID(),
+                title: question.prompt.length > 55 ? `${question.prompt.slice(0, 52)}…` : question.prompt,
+                organization: "",
+                role: "",
+                situation: `Target interview question: "${question.prompt}"\n\nContext & background:\n`,
+                task: "",
+                actions: "",
+                result: "",
+                source: "manual",
+                updatedAt: "",
+              };
+              setDraft(newDraft);
+              setDirty(true);
+              setMessage("Draft created for interview question. Describe what happened.");
+              setActiveTab("stories");
+            }}
+          />
+        </section>
         <section id="matrix-panel" role="tabpanel" aria-labelledby="matrix-tab" hidden={activeTab !== "matrix"}>
           <StrengthMatrix stories={stories} ready={ready} storageError={storageError} dirty={dirty} onEdit={(story) => {
             if (dirty && draft?.id !== story.id && !window.confirm("Discard your unsaved edits?")) return;
