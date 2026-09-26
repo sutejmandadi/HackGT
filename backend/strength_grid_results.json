@@ -1,0 +1,303 @@
+{
+  "scores": [
+    {
+      "id": "story_1",
+      "title": "Cross-Functional Launch Conflict",
+      "organization": "Acme Corp",
+      "role": "Software Engineer",
+      "source": "resume",
+      "userConfirmed": true,
+      "updatedAt": "2026-09-25T20:00:00Z",
+      "teamwork": 61.4,
+      "problem_solving": 15.1,
+      "failure": 0.9,
+      "leadership": 20.3,
+      "ambiguity": 38.4,
+      "dominant_category": "teamwork",
+      "secondary_category": "ambiguity",
+      "overall_strength_score": 27.2,
+      "details": {
+        "teamwork": {
+          "category": "teamwork",
+          "label": "Teamwork & Collaboration",
+          "percentage": 61.4,
+          "confidence": 0.87,
+          "level": "Moderate",
+          "signals_detected": [
+            "consensus",
+            "align",
+            "cross-functional",
+            "teams",
+            "alignments"
+          ],
+          "evidence_sentences": [
+            "I facilitated constructive discussion, listened to both sides' architectural concerns, and proposed a compromise protocol using protobufs.",
+            "Task: I needed to align both teams, resolve the technical dispute, and establish a shared contract so neither team was blocked."
+          ],
+          "improvement_tip": "Great evidence of teamwork & collaboration!"
+        },
+        "problem_solving": {
+          "category": "problem_solving",
+          "label": "Problem Solving & Analytical Rigor",
+          "percentage": 15.1,
+          "confidence": 0.81,
+          "level": "Low",
+          "signals_detected": [
+            "engineer",
+            "architectural"
+          ],
+          "evidence_sentences": [
+            "I facilitated constructive discussion, listened to both sides' architectural concerns, and proposed a compromise protocol using protobufs.",
+            "Situation: During our quarterly sprint, our front-end and backend teams had conflicting specifications for the API schema, threatening our launch deadline."
+          ],
+          "improvement_tip": "Detail the technical diagnosis, root cause analysis, or systematic steps you took to overcome the obstacle."
+        },
+        "failure": {
+          "category": "failure",
+          "label": "Failure & Resilience",
+          "percentage": 0.9,
+          "confidence": 0.81,
+          "level": "Low",
+          "signals_detected": [],
+          "evidence_sentences": [
+            "I also paired with a junior frontend engineer who was struggling with the new contract.",
+            "Task: I needed to align both teams, resolve the technical dispute, and establish a shared contract so neither team was blocked."
+          ],
+          "improvement_tip": "Include a candid vulnerability, mistake made, or unexpected setback, along with deep self-reflection and permanent safeguards put in place."
+        },
+        "leadership": {
+          "category": "leadership",
+          "label": "Leadership & Initiative",
+          "percentage": 20.3,
+          "confidence": 0.82,
+          "level": "Low",
+          "signals_detected": [],
+          "evidence_sentences": [
+            "I also paired with a junior frontend engineer who was struggling with the new contract.",
+            "I facilitated constructive discussion, listened to both sides' architectural concerns, and proposed a compromise protocol using protobufs."
+          ],
+          "improvement_tip": "Highlight where you took initiative, made decisions, steered others, mentored team members, or showed proactive ownership."
+        },
+        "ambiguity": {
+          "category": "ambiguity",
+          "label": "Dealing with Ambiguity",
+          "percentage": 38.4,
+          "confidence": 0.84,
+          "level": "Low",
+          "signals_detected": [],
+          "evidence_sentences": [
+            "I facilitated constructive discussion, listened to both sides' architectural concerns, and proposed a compromise protocol using protobufs.",
+            "Situation: During our quarterly sprint, our front-end and backend teams had conflicting specifications for the API schema, threatening our launch deadline."
+          ],
+          "improvement_tip": "Emphasize how you operated without clear instructions, made smart bets under uncertainty, or defined unclear project requirements."
+        }
+      }
+    },
+    {
+      "id": "story_2",
+      "title": "Production Database Outage",
+      "organization": "ShopFast",
+      "role": "Backend Engineer",
+      "source": "manual",
+      "userConfirmed": true,
+      "updatedAt": "2026-09-25T21:15:00Z",
+      "teamwork": 0.0,
+      "problem_solving": 10.3,
+      "failure": 63.3,
+      "leadership": 4.7,
+      "ambiguity": 14.4,
+      "dominant_category": "failure",
+      "secondary_category": "ambiguity",
+      "overall_strength_score": 18.5,
+      "details": {
+        "teamwork": {
+          "category": "teamwork",
+          "label": "Teamwork & Collaboration",
+          "percentage": 0.0,
+          "confidence": 0.76,
+          "level": "Low",
+          "signals_detected": [],
+          "evidence_sentences": [
+            "Task: As the on-call engineer, I was responsible for diagnosing the incident, bringing the system back online, and explaining what happened."
+          ],
+          "improvement_tip": "Highlight how you collaborated with others, resolved differing opinions, or supported your teammates."
+        },
+        "problem_solving": {
+          "category": "problem_solving",
+          "label": "Problem Solving & Analytical Rigor",
+          "percentage": 10.3,
+          "confidence": 0.8,
+          "level": "Low",
+          "signals_detected": [
+            "engineer",
+            "diagnosing",
+            "engineering"
+          ],
+          "evidence_sentences": [
+            "I learned the critical importance of load-testing migrations and never pushing to production without automated guardrails.",
+            "Task: As the on-call engineer, I was responsible for diagnosing the incident, bringing the system back online, and explaining what happened."
+          ],
+          "improvement_tip": "Detail the technical diagnosis, root cause analysis, or systematic steps you took to overcome the obstacle."
+        },
+        "failure": {
+          "category": "failure",
+          "label": "Failure & Resilience",
+          "percentage": 63.3,
+          "confidence": 0.86,
+          "level": "Moderate",
+          "signals_detected": [
+            "incident",
+            "post-mortem",
+            "incidents",
+            "mistake",
+            "outage"
+          ],
+          "evidence_sentences": [
+            "Task: As the on-call engineer, I was responsible for diagnosing the incident, bringing the system back online, and explaining what happened.",
+            "I took full personal accountability, quickly rolled back the migration, and restored checkout."
+          ],
+          "improvement_tip": "Great evidence of failure & resilience!"
+        },
+        "leadership": {
+          "category": "leadership",
+          "label": "Leadership & Initiative",
+          "percentage": 4.7,
+          "confidence": 0.79,
+          "level": "Low",
+          "signals_detected": [
+            "ownership"
+          ],
+          "evidence_sentences": [
+            "Task: As the on-call engineer, I was responsible for diagnosing the incident, bringing the system back online, and explaining what happened.",
+            "I learned the critical importance of load-testing migrations and never pushing to production without automated guardrails."
+          ],
+          "improvement_tip": "Highlight where you took initiative, made decisions, steered others, mentored team members, or showed proactive ownership."
+        },
+        "ambiguity": {
+          "category": "ambiguity",
+          "label": "Dealing with Ambiguity",
+          "percentage": 14.4,
+          "confidence": 0.8,
+          "level": "Low",
+          "signals_detected": [],
+          "evidence_sentences": [
+            "I learned the critical importance of load-testing migrations and never pushing to production without automated guardrails.",
+            "Task: As the on-call engineer, I was responsible for diagnosing the incident, bringing the system back online, and explaining what happened."
+          ],
+          "improvement_tip": "Emphasize how you operated without clear instructions, made smart bets under uncertainty, or defined unclear project requirements."
+        }
+      }
+    },
+    {
+      "id": "story_3",
+      "title": "Greenfield Zero-to-One Prototype",
+      "organization": "NextGen Labs",
+      "role": "AI Research Engineer",
+      "source": "resume",
+      "userConfirmed": false,
+      "updatedAt": "2026-09-25T22:30:00Z",
+      "teamwork": 42.7,
+      "problem_solving": 47.0,
+      "failure": 11.1,
+      "leadership": 58.0,
+      "ambiguity": 94.2,
+      "dominant_category": "ambiguity",
+      "secondary_category": "leadership",
+      "overall_strength_score": 50.6,
+      "details": {
+        "teamwork": {
+          "category": "teamwork",
+          "label": "Teamwork & Collaboration",
+          "percentage": 42.7,
+          "confidence": 0.86,
+          "level": "Low",
+          "signals_detected": [],
+          "evidence_sentences": [
+            "Task: I was tasked with exploring the space from scratch, validating technical feasibility, and proposing a concrete product direction under high uncertainty.",
+            "Action: Since requirements were completely undefined, I interviewed 12 internal account managers to discover their primary friction points."
+          ],
+          "improvement_tip": "Highlight how you collaborated with others, resolved differing opinions, or supported your teammates."
+        },
+        "problem_solving": {
+          "category": "problem_solving",
+          "label": "Problem Solving & Analytical Rigor",
+          "percentage": 47.0,
+          "confidence": 0.87,
+          "level": "Moderate",
+          "signals_detected": [
+            "architecture",
+            "trade-offs",
+            "Engineering"
+          ],
+          "evidence_sentences": [
+            "I set up measurable evaluation rubrics, tested latency trade-offs, and presented a data-driven proposal to our VP of Engineering.",
+            "Task: I was tasked with exploring the space from scratch, validating technical feasibility, and proposing a concrete product direction under high uncertainty."
+          ],
+          "improvement_tip": "Detail the technical diagnosis, root cause analysis, or systematic steps you took to overcome the obstacle."
+        },
+        "failure": {
+          "category": "failure",
+          "label": "Failure & Resilience",
+          "percentage": 11.1,
+          "confidence": 0.82,
+          "level": "Low",
+          "signals_detected": [],
+          "evidence_sentences": [
+            "Action: Since requirements were completely undefined, I interviewed 12 internal account managers to discover their primary friction points.",
+            "Task: I was tasked with exploring the space from scratch, validating technical feasibility, and proposing a concrete product direction under high uncertainty."
+          ],
+          "improvement_tip": "Include a candid vulnerability, mistake made, or unexpected setback, along with deep self-reflection and permanent safeguards put in place."
+        },
+        "leadership": {
+          "category": "leadership",
+          "label": "Leadership & Initiative",
+          "percentage": 58.0,
+          "confidence": 0.88,
+          "level": "Moderate",
+          "signals_detected": [
+            "leadership",
+            "initiative"
+          ],
+          "evidence_sentences": [
+            "Task: I was tasked with exploring the space from scratch, validating technical feasibility, and proposing a concrete product direction under high uncertainty.",
+            "Situation: Our company wanted to explore integrating generative AI into our legacy workflow product, but there were no customer specs, no architecture roadmap, and leadership had only vague expectations."
+          ],
+          "improvement_tip": "Highlight where you took initiative, made decisions, steered others, mentored team members, or showed proactive ownership."
+        },
+        "ambiguity": {
+          "category": "ambiguity",
+          "label": "Dealing with Ambiguity",
+          "percentage": 94.2,
+          "confidence": 0.92,
+          "level": "Exemplary",
+          "signals_detected": [
+            "uncertainty",
+            "vague",
+            "exploring",
+            "prototypes",
+            "undefined"
+          ],
+          "evidence_sentences": [
+            "Task: I was tasked with exploring the space from scratch, validating technical feasibility, and proposing a concrete product direction under high uncertainty.",
+            "Working with incomplete documentation, I rapidly built 3 lightweight proof-of-concept prototypes in 2 weeks."
+          ],
+          "improvement_tip": "Great evidence of dealing with ambiguity!"
+        }
+      }
+    }
+  ],
+  "category_averages": {
+    "teamwork": 34.7,
+    "problem_solving": 24.1,
+    "failure": 25.1,
+    "leadership": 27.7,
+    "ambiguity": 49.0
+  },
+  "coverage_gaps": [
+    "teamwork",
+    "problem_solving",
+    "failure",
+    "leadership"
+  ],
+  "recommended_focus": "Critical coverage gap in TEAMWORK, PROBLEM_SOLVING, FAILURE, LEADERSHIP. Prepare a story targeting these areas."
+}

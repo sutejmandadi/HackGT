@@ -2,7 +2,7 @@
 .env.*
 venv/
 .venv/
---pycache__/
+__pycache__/
 *.pyc
 node_modules/
 .next/

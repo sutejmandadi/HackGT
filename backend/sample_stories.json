@@ -1,0 +1,41 @@
+[
+  {
+    "id": "story_1",
+    "title": "Cross-Functional Launch Conflict",
+    "organization": "Acme Corp",
+    "role": "Software Engineer",
+    "situation": "During our quarterly sprint, our front-end and backend teams had conflicting specifications for the API schema, threatening our launch deadline.",
+    "task": "I needed to align both teams, resolve the technical dispute, and establish a shared contract so neither team was blocked.",
+    "actions": "I scheduled an urgent cross-functional workshop where we mapped out all edge cases together on a virtual whiteboard. I facilitated constructive discussion, listened to both sides' architectural concerns, and proposed a compromise protocol using protobufs. I also paired with a junior frontend engineer who was struggling with the new contract.",
+    "result": "Both teams agreed to the schema, reached consensus within 2 hours, and we delivered the release 3 days ahead of schedule with 0 integration bugs. The team adopted our workshop format for future sprint alignments.",
+    "source": "resume",
+    "userConfirmed": true,
+    "updatedAt": "2026-09-25T20:00:00Z"
+  },
+  {
+    "id": "story_2",
+    "title": "Production Database Outage",
+    "organization": "ShopFast",
+    "role": "Backend Engineer",
+    "situation": "Early in my career at an e-commerce startup, our checkout service experienced a 45-minute total outage during Black Friday.",
+    "task": "As the on-call engineer, I was responsible for diagnosing the incident, bringing the system back online, and explaining what happened.",
+    "actions": "I discovered that an unindexed migration I had authored and pushed earlier that morning locked the orders table under heavy load. I took full personal accountability, quickly rolled back the migration, and restored checkout. Afterwards, I conducted a blameless post-mortem with the entire engineering org, walked through my mistake, and wrote a pre-deployment linter rule that blocks unindexed foreign key migrations.",
+    "result": "The linter prevented 4 similar outage incidents in subsequent quarters, and my manager commended my transparency and ownership. I learned the critical importance of load-testing migrations and never pushing to production without automated guardrails.",
+    "source": "manual",
+    "userConfirmed": true,
+    "updatedAt": "2026-09-25T21:15:00Z"
+  },
+  {
+    "id": "story_3",
+    "title": "Greenfield Zero-to-One Prototype",
+    "organization": "NextGen Labs",
+    "role": "AI Research Engineer",
+    "situation": "Our company wanted to explore integrating generative AI into our legacy workflow product, but there were no customer specs, no architecture roadmap, and leadership had only vague expectations.",
+    "task": "I was tasked with exploring the space from scratch, validating technical feasibility, and proposing a concrete product direction under high uncertainty.",
+    "actions": "Since requirements were completely undefined, I interviewed 12 internal account managers to discover their primary friction points. Working with incomplete documentation, I rapidly built 3 lightweight proof-of-concept prototypes in 2 weeks. I set up measurable evaluation rubrics, tested latency trade-offs, and presented a data-driven proposal to our VP of Engineering.",
+    "result": "My prototype was greenlit as the company's Q3 flagship initiative, securing $500k in initial budget and cutting manual workflow time by 65% for our pilot customers.",
+    "source": "resume",
+    "userConfirmed": false,
+    "updatedAt": "2026-09-25T22:30:00Z"
+  }
+]
