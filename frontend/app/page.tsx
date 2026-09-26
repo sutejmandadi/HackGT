@@ -20,10 +20,28 @@ const subscribeToHydration = () => () => {};
 
 export default function StoryBankPage() {
   const hydrated = useSyncExternalStore(subscribeToHydration, () => true, () => false);
-  return hydrated ? <AuthBoundary>{(user) => <StoryBank key={user?.id ?? "local"} ownerId={user?.id} />}</AuthBoundary> : <main className="bank-main">Loading MeCode…</main>;
+  return hydrated ? (
+    <AuthBoundary>
+      {(user, onNavigateLanding) => (
+        <StoryBank
+          key={user?.id ?? "local"}
+          ownerId={user?.id}
+          onNavigateLanding={onNavigateLanding}
+        />
+      )}
+    </AuthBoundary>
+  ) : (
+    <main className="bank-main">Loading MeCode…</main>
+  );
 }
 
-function StoryBank({ ownerId }: { ownerId?: string }) {
+function StoryBank({
+  ownerId,
+  onNavigateLanding,
+}: {
+  ownerId?: string;
+  onNavigateLanding: () => void;
+}) {
   const [initial] = useState(() => {
     if (ownerId) return { stories: [] as Story[], error: "" };
     try { return { stories: readLocalStories(), error: "" }; }
@@ -144,12 +162,29 @@ function StoryBank({ ownerId }: { ownerId?: string }) {
     setDraft({ ...draft, [key]: value }); setDirty(true); setMessage("");
   }
 
+  function handleGoHome() {
+    if (dirty && !window.confirm("Discard your unsaved edits?")) return;
+    onNavigateLanding();
+  }
+
   const complete = stories.filter((story) => missingSections(story).length === 0).length;
   const exists = draft && stories.some((story) => story.id === draft.id);
 
   return (
     <div className="bank-shell">
-      <header className="topbar"><div className="brand"><span className="brand-icon">m.</span> MeCode</div><span className="workspace-label">Interview workspace</span></header>
+      <header className="topbar">
+        <button
+          type="button"
+          className="brand brand-btn"
+          onClick={handleGoHome}
+          title="Return to MeCode landing page"
+          aria-label="MeCode Home"
+        >
+          <span className="brand-icon">m.</span>
+          <span>MeCode</span>
+        </button>
+        <span className="workspace-label">Interview workspace</span>
+      </header>
       <main className="bank-main">
         <div className="workspace-tabs" role="tablist" aria-label="MeCode workspace">
           {([
