@@ -323,6 +323,7 @@ textarea { resize:vertical; min-height:112px; }
   filter: blur(60px);
   pointer-events: none;
   z-index: 0;
+  animation: raycastAmbientPulse 10s ease-in-out infinite;
 }
 
 .raycast-glow-ambient {
@@ -458,8 +459,82 @@ textarea { resize:vertical; min-height:112px; }
   align-items: center;
 }
 
+/* ==========================================================================
+   Raycast Cinematic Phase-In & Shimmer Keyframes
+   ========================================================================== */
+
+@keyframes raycastPhaseBlurUp {
+  0% {
+    opacity: 0;
+    transform: translateY(22px) scale(0.975);
+    filter: blur(12px);
+  }
+  60% {
+    opacity: 0.88;
+    filter: blur(2px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0px);
+  }
+}
+
+@keyframes raycastPhaseItemUp {
+  0% {
+    opacity: 0;
+    transform: translateY(18px);
+    filter: blur(8px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0px);
+  }
+}
+
+@keyframes raycastLauncherEnter {
+  0% {
+    opacity: 0;
+    transform: translateY(32px) scale(0.98);
+    filter: blur(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0px);
+  }
+}
+
+@keyframes raycastGradientPhase {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes raycastAmbientPulse {
+  0%, 100% {
+    opacity: 0.35;
+    transform: translateX(-50%) scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: translateX(-50%) scale(1.08);
+  }
+}
+
 .raycast-badge-wrapper {
   margin-bottom: 24px;
+  cursor: pointer;
+  user-select: none;
+  display: inline-block;
+  outline: none;
 }
 
 .raycast-badge {
@@ -475,6 +550,13 @@ textarea { resize:vertical; min-height:112px; }
   font-weight: 550;
   color: rgba(255, 255, 255, 0.9);
   letter-spacing: -0.2px;
+  transition: all 180ms ease;
+}
+
+.raycast-badge:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.22);
+  transform: translateY(-1px);
 }
 
 .raycast-badge-dot {
@@ -485,6 +567,19 @@ textarea { resize:vertical; min-height:112px; }
   box-shadow: 0 0 8px #ff6363;
 }
 
+.raycast-badge-replay {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.4);
+  margin-left: 2px;
+  transition: transform 300ms ease, color 150ms ease;
+}
+
+.raycast-badge:hover .raycast-badge-replay {
+  color: rgba(255, 255, 255, 0.9);
+  transform: rotate(180deg);
+}
+
+/* Staggered Phase-In Text Styles */
 .raycast-hero-title {
   font-size: clamp(38px, 5.8vw, 68px);
   font-weight: 750;
@@ -494,10 +589,59 @@ textarea { resize:vertical; min-height:112px; }
   color: #ffffff;
 }
 
+.raycast-title-line {
+  display: inline-block;
+}
+
+.raycast-title-line-1 {
+  color: #ffffff;
+}
+
+.raycast-phase-word {
+  display: inline-block;
+  opacity: 0;
+  animation: raycastPhaseBlurUp 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: transform, opacity, filter;
+}
+
+.raycast-title-line-2 {
+  opacity: 0;
+  display: inline-block;
+  filter: drop-shadow(0 0 28px rgba(255, 99, 99, 0.32));
+  transition: filter 300ms ease;
+}
+
+.raycast-hero-title:hover .raycast-title-line-2 {
+  filter: drop-shadow(0 0 40px rgba(255, 99, 99, 0.55));
+}
+
 .raycast-hero-gradient {
-  background: linear-gradient(135deg, #ff6363 0%, #ff9580 30%, #a78bfa 70%, #4de1ff 100%);
+  background: linear-gradient(
+    115deg,
+    #ff6363 0%,
+    #ff8a7a 22%,
+    #e9d5ff 45%,
+    #a78bfa 62%,
+    #4de1ff 82%,
+    #ff6363 100%
+  );
+  background-size: 240% auto;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  animation: raycastPhaseBlurUp 0.95s cubic-bezier(0.16, 1, 0.3, 1) forwards,
+             raycastGradientPhase 8s ease-in-out infinite 1.5s;
+}
+
+.raycast-phase-item {
+  opacity: 0;
+  animation: raycastPhaseItemUp 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: transform, opacity, filter;
+}
+
+.raycast-phase-launcher {
+  opacity: 0;
+  animation: raycastLauncherEnter 1.05s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: transform, opacity, filter;
 }
 
 .raycast-hero-subtitle {
@@ -613,6 +757,20 @@ textarea { resize:vertical; min-height:112px; }
   color: rgba(255, 255, 255, 0.45);
 }
 
+.raycast-search-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-size: 14px;
+  color: #ffffff;
+  font-family: inherit;
+}
+
+.raycast-search-input::placeholder {
+  color: rgba(255, 255, 255, 0.42);
+}
+
 .raycast-kbd-hint {
   font-size: 11px;
   color: rgba(255, 255, 255, 0.4);
@@ -620,6 +778,25 @@ textarea { resize:vertical; min-height:112px; }
   padding: 2px 8px;
   border-radius: 4px;
   border: 1px solid rgba(255, 255, 255, 0.1);
+  white-space: nowrap;
+}
+
+.raycast-kbd-hint.clickable {
+  cursor: pointer;
+  transition: all 120ms ease;
+}
+
+.raycast-kbd-hint.clickable:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+}
+
+.raycast-no-results {
+  padding: 32px 16px;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 13px;
+  font-style: italic;
 }
 
 .raycast-launcher-body {
@@ -1093,4 +1270,19 @@ textarea { resize:vertical; min-height:112px; }
     display: none;
   }
 }
+
+@media (prefers-reduced-motion: reduce) {
+  .raycast-phase-word,
+  .raycast-phase-item,
+  .raycast-phase-launcher,
+  .raycast-hero-gradient,
+  .raycast-glow-top {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+    animation: none !important;
+  }
+}
+
+
 

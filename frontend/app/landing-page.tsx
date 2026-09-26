@@ -72,6 +72,19 @@ export default function LandingPage({
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [selectedDemoIndex, setSelectedDemoIndex] = useState(0);
+  const [phaseKey, setPhaseKey] = useState(0);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const filteredStories = DEMO_STORIES.filter((item) => {
+    if (!searchQuery.trim()) return true;
+    const q = searchQuery.toLowerCase();
+    return (
+      item.title.toLowerCase().includes(q) ||
+      item.category.toLowerCase().includes(q) ||
+      item.situation.toLowerCase().includes(q) ||
+      item.actions.toLowerCase().includes(q)
+    );
+  });
 
   // Close modal on Escape
   useEffect(() => {
@@ -98,7 +111,7 @@ export default function LandingPage({
     setAuthOpen(true);
   }
 
-  const activeDemo = DEMO_STORIES[selectedDemoIndex];
+  const activeDemo = filteredStories[selectedDemoIndex] || DEMO_STORIES[0];
 
   return (
     <div className="raycast-root">
@@ -140,25 +153,46 @@ export default function LandingPage({
       </header>
 
       {/* Hero Section */}
-      <section className="raycast-hero">
-        <div className="raycast-badge-wrapper">
+      <section className="raycast-hero" key={phaseKey}>
+        <div
+          className="raycast-badge-wrapper raycast-phase-item"
+          style={{ animationDelay: "80ms" }}
+          onClick={() => setPhaseKey((k) => k + 1)}
+          title="Click to replay reveal animation"
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") setPhaseKey((k) => k + 1);
+          }}
+        >
           <span className="raycast-badge">
             <span className="raycast-badge-dot" />
             ✦ Next-Gen Behavioral Interview Intelligence
+            <span className="raycast-badge-replay" aria-hidden="true">↻</span>
           </span>
         </div>
 
-        <h1 className="raycast-hero-title">
-          LeetCode solved technicals.<br />
-          <span className="raycast-hero-gradient">MeCode solves the rest.</span>
+        <h1 className="raycast-hero-title" aria-label="LeetCode solved technicals. MeCode solves the rest.">
+          <span className="raycast-title-line raycast-title-line-1">
+            <span className="raycast-phase-word" style={{ animationDelay: "160ms" }}>LeetCode</span>{" "}
+            <span className="raycast-phase-word" style={{ animationDelay: "280ms" }}>solved</span>{" "}
+            <span className="raycast-phase-word" style={{ animationDelay: "400ms" }}>technicals.</span>
+          </span>
+          <br className="raycast-title-break" />
+          <span
+            className="raycast-title-line raycast-title-line-2 raycast-hero-gradient raycast-phase-item"
+            style={{ animationDelay: "580ms" }}
+          >
+            MeCode solves the rest.
+          </span>
         </h1>
 
-        <p className="raycast-hero-subtitle">
+        <p className="raycast-hero-subtitle raycast-phase-item" style={{ animationDelay: "800ms" }}>
           Engineering interviews aren&apos;t won on algorithms alone. Stop rambling through “Tell me about a time…” 
           Turn messy experiences into structured STAR stories, scored by ML rubrics across the 5 core behavioral pillars.
         </p>
 
-        <div className="raycast-hero-cta-group">
+        <div className="raycast-hero-cta-group raycast-phase-item" style={{ animationDelay: "980ms" }}>
           <button
             className="raycast-btn-glow"
             onClick={() => openAuth(true)}
@@ -174,7 +208,7 @@ export default function LandingPage({
           </button>
         </div>
 
-        <div className="raycast-pill-row">
+        <div className="raycast-pill-row raycast-phase-item" style={{ animationDelay: "1140ms" }}>
           <span className="raycast-pill-item">⚡ 50 Curated Big-Tech Prompts</span>
           <span className="raycast-pill-dot">•</span>
           <span className="raycast-pill-item">🎯 ML Strength Rubric</span>
@@ -185,47 +219,71 @@ export default function LandingPage({
         </div>
 
         {/* Raycast-style Interactive Command Bar & Story Preview */}
-        <div id="demo-preview" className="raycast-launcher-window">
+        <div id="demo-preview" className="raycast-launcher-window raycast-phase-launcher" style={{ animationDelay: "1280ms" }}>
           <div className="raycast-launcher-bar">
             <span className="raycast-search-icon">⌘</span>
-            <span className="raycast-search-text">Search stories, competency rubrics, or interview prompts…</span>
-            <span className="raycast-kbd-hint">ESC to close</span>
+            <input
+              type="text"
+              className="raycast-search-input"
+              placeholder="Search stories, competency rubrics, or interview prompts…"
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setSelectedDemoIndex(0);
+              }}
+              aria-label="Filter demo stories"
+            />
+            {searchQuery ? (
+              <button
+                type="button"
+                className="raycast-kbd-hint clickable"
+                onClick={() => setSearchQuery("")}
+              >
+                Clear
+              </button>
+            ) : (
+              <span className="raycast-kbd-hint">Type to filter</span>
+            )}
           </div>
 
           <div className="raycast-launcher-body">
             {/* Left list of items */}
             <div className="raycast-launcher-list">
               <div className="raycast-list-header">
-                <span>SAVED STAR EXPERIENCES</span>
+                <span>SAVED STAR EXPERIENCES ({filteredStories.length})</span>
                 <span>ML SCORE</span>
               </div>
-              {DEMO_STORIES.map((item, index) => {
-                const isSelected = index === selectedDemoIndex;
-                return (
-                  <button
-                    key={item.id}
-                    className={`raycast-list-item ${isSelected ? "selected" : ""}`}
-                    onClick={() => setSelectedDemoIndex(index)}
-                  >
-                    <div className="raycast-item-main">
-                      <span
-                        className="raycast-pillar-dot"
-                        style={{ backgroundColor: item.pillarColor }}
-                      />
-                      <span className="raycast-item-title">{item.title}</span>
-                    </div>
-                    <div className="raycast-item-meta">
-                      <span
-                        className="raycast-cat-badge"
-                        style={{ color: item.pillarColor }}
-                      >
-                        {item.category}
-                      </span>
-                      <span className="raycast-item-score">{item.score}</span>
-                    </div>
-                  </button>
-                );
-              })}
+              {filteredStories.length === 0 ? (
+                <div className="raycast-no-results">No stories matching “{searchQuery}”</div>
+              ) : (
+                filteredStories.map((item, index) => {
+                  const isSelected = index === selectedDemoIndex;
+                  return (
+                    <button
+                      key={item.id}
+                      className={`raycast-list-item ${isSelected ? "selected" : ""}`}
+                      onClick={() => setSelectedDemoIndex(index)}
+                    >
+                      <div className="raycast-item-main">
+                        <span
+                          className="raycast-pillar-dot"
+                          style={{ backgroundColor: item.pillarColor }}
+                        />
+                        <span className="raycast-item-title">{item.title}</span>
+                      </div>
+                      <div className="raycast-item-meta">
+                        <span
+                          className="raycast-cat-badge"
+                          style={{ color: item.pillarColor }}
+                        >
+                          {item.category}
+                        </span>
+                        <span className="raycast-item-score">{item.score}</span>
+                      </div>
+                    </button>
+                  );
+                })
+              )}
             </div>
 
             {/* Right preview pane */}
