@@ -32,23 +32,30 @@ def run_tests():
         result="My prototype was greenlit as the company's Q3 flagship initiative, securing $500k in initial budget and cutting manual workflow time by 65% for our pilot customers."
     )
 
+    # Test 4: Shallow / Super Short Story (Testing Depth & Substance Modulator)
+    shallow_story = STARInput(
+        title="Super Short Shallow Story",
+        situation="We had a conflict.",
+        task="Fix it.",
+        actions="I collaborated with the team.",
+        result="We agreed."
+    )
+
     print("\n" + "="*80)
     print("TESTING STRENGTH GRID ML SCORER")
     print("="*80)
 
-    for story in [teamwork_story, failure_story, ambiguity_story]:
+    for story in [teamwork_story, failure_story, ambiguity_story, shallow_story]:
         score = scorer.score_single_story(story)
         print(f"\nSTORY: {story.title}")
         print(f"Dominant Pillar: {score.dominant_category.upper()} (Overall Strength: {score.overall_strength_score}%)")
-        print(f"  - Teamwork:        {score.teamwork}%")
-        print(f"  - Problem Solving: {score.problem_solving}%")
-        print(f"  - Failure:         {score.failure}%")
-        print(f"  - Leadership:      {score.leadership}%")
-        print(f"  - Ambiguity:       {score.ambiguity}%")
-        print(f"Top Signals Detected:")
-        for cat, detail in score.details.items():
-            if detail.percentage >= 60.0:
-                print(f"    [{cat}]: {detail.signals_detected} -> Level: {detail.level}")
+        print(f"  - Teamwork:        {score.teamwork}% (Level: {score.details['teamwork'].level})")
+        print(f"  - Problem Solving: {score.problem_solving}% (Level: {score.details['problem_solving'].level})")
+        print(f"  - Failure:         {score.failure}% (Level: {score.details['failure'].level})")
+        print(f"  - Leadership:      {score.leadership}% (Level: {score.details['leadership'].level})")
+        print(f"  - Ambiguity:       {score.ambiguity}% (Level: {score.details['ambiguity'].level})")
+        tip = score.details[score.dominant_category].improvement_tip
+        print(f"  Feedback Tip: {tip}")
 
     print("\n" + "="*80)
     print("ALL TESTS PASSED SUCCESSFULLY!")

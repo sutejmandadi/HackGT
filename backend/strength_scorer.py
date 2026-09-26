@@ -149,6 +149,50 @@ class StrengthGridScorer:
                 matches.extend(found[:2])
         return len(matches), list(set(matches))[:5]
 
+    @staticmethod
+    def _compute_depth_factor(sections: Dict[str, str]) -> Tuple[float, List[str], str, int]:
+        """
+        Computes a Substance & Depth Multiplier (0.25 to 1.0) based on:
+        1. Word count saturation curve (interviews expect 80-250 words)
+        2. Per-section completeness (especially Actions & Result)
+        3. Quantifiable impact markers (percentages, scale, numbers)
+        """
+        import math
+        words_per_sec = {k: len(v.strip().split()) for k, v in sections.items()}
+        total_words = sum(words_per_sec.values())
+
+        # Word count saturation curve: reaches ~0.80 at 65 words, ~0.95 at 100 words
+        base_depth = 1.0 - math.exp(-total_words / 50.0)
+        base_depth = max(0.25, min(1.0, base_depth))
+
+        penalties = 0.0
+        warnings = []
+
+        if words_per_sec.get("action", 0) < 12:
+            penalties += 0.15
+            warnings.append("Action is too brief; elaborate with concrete technical steps.")
+        if words_per_sec.get("result", 0) < 8:
+            penalties += 0.10
+            warnings.append("Result is too brief; include quantifiable impact or learnings.")
+        if words_per_sec.get("situation", 0) < 6:
+            penalties += 0.05
+            warnings.append("Situation needs more context about the team or environment.")
+
+        # Bonus for quantifiable metrics in Result (e.g. 40%, 3 days, $100k, 5x)
+        has_metrics = bool(re.search(r'\b\d+(\.\d+)?(%|[kKmMbB]|x|\s*(days?|weeks?|months?|users?|ms|seconds?))?\b', sections.get("result", "")))
+        metric_bonus = 0.06 if has_metrics and total_words >= 40 else 0.0
+
+        depth_multiplier = float(np.clip(base_depth - penalties + metric_bonus, 0.25, 1.0))
+
+        if total_words < 35:
+            tip = f"Story lacks depth ({total_words} words). Interviewers expect 80-250 words detailing your specific actions, technical trade-offs, and measurable outcomes."
+        elif warnings:
+            tip = " ".join(warnings)
+        else:
+            tip = ""
+
+        return depth_multiplier, warnings, tip, total_words
+
     def score_single_story(self, story: STARInput) -> StrengthGridScore:
         """
         Evaluates a single STAR story and returns percentage scores (0.0 to 100.0)
@@ -175,6 +219,8 @@ class StrengthGridScorer:
         
         # Encode sentences for evidence extraction if available
         sentence_embeddings = self.model.encode(sentences, normalize_embeddings=True) if sentences else None
+
+        depth_multiplier, depth_warnings, depth_tip, total_words = self._compute_depth_factor(sections)
 
         category_scores: Dict[str, float] = {}
         category_details: Dict[str, CategoryScoreDetail] = {}
@@ -219,14 +265,18 @@ class StrengthGridScorer:
             # Logistic sigmoid activation
             calibrated_prob = 1.0 / (1.0 + np.exp(-steepness * (effective_score - midpoint)))
 
-            # Scale to percentage 0.0 - 100.0%
-            percentage = round(float(np.clip(calibrated_prob * 100.0, 0.0, 100.0)), 1)
+            # Substance & Depth Modulation:
+            # Multiplies by depth factor (0.25 to 1.0) so shallow, 15-word answers cannot score 85%+
+            final_prob = calibrated_prob * depth_multiplier
+            percentage = round(float(np.clip(final_prob * 100.0, 0.0, 100.0)), 1)
 
             # Confidence score
-            confidence = round(float(np.clip(0.70 + (combined_raw_sim * 0.4), 0.70, 0.98)), 2)
+            confidence = round(float(np.clip(0.65 + (combined_raw_sim * 0.3) + (depth_multiplier * 0.15), 0.65, 0.98)), 2)
 
             # Level classification
-            if percentage >= 82.0:
+            if total_words < 35:
+                level = "Insufficient Detail"
+            elif percentage >= 82.0:
                 level = "Exemplary"
             elif percentage >= 65.0:
                 level = "Strong"
@@ -242,7 +292,12 @@ class StrengthGridScorer:
                 top_indices = np.argsort(sent_sims)[::-1][:2]
                 evidence_sents = [sentences[idx] for idx in top_indices if sent_sims[idx] > 0.25]
 
-            tip = config["low_tip"] if percentage < 60.0 else f"Great evidence of {config['label'].lower()}!"
+            if depth_tip and total_words < 45:
+                tip = depth_tip
+            elif percentage < 60.0:
+                tip = config["low_tip"]
+            else:
+                tip = f"Great evidence of {config['label'].lower()}!"
 
             category_scores[cat_key] = percentage
             category_details[cat_key] = CategoryScoreDetail(
