@@ -131,3 +131,22 @@ textarea { resize:vertical; min-height:112px; }
 .matrix-summary li { margin:var(--s2) 0; }
 .matrix-summary h3 { margin-top:var(--s4); font-weight:600; }
 @media(max-width:720px) { .matrix-summary { grid-template-columns:1fr; }.workspace-tabs { margin-bottom:var(--s6); } }
+
+/* Resume import shares the Story Bank theme and interaction tokens. */
+.resume-panel { background:var(--surface); border:1px solid var(--border); border-radius:var(--panel-radius); padding:var(--s6); margin-bottom:var(--s6); }
+.resume-heading { display:flex; align-items:center; justify-content:space-between; gap:var(--s4); }
+.resume-heading h2 { font-size:16px; margin:0; }.resume-heading p { color:var(--muted); margin:var(--s1) 0 0; }
+.resume-panel .text-button { margin-top:0; }.resume-inputs { border:0; padding:0; margin:var(--s4) 0; min-width:0; }
+.resume-actions { display:flex; flex-wrap:wrap; align-items:center; gap:var(--s2); margin:var(--s4) 0; }
+.resume-actions [aria-pressed=true] { color:var(--accent); background:var(--accent-surface); border-color:var(--accent); }
+.resume-review h3 { font-size:16px; margin:var(--s6) 0 var(--s2); }
+.resume-panel summary { cursor:pointer; padding:var(--s3) 0; color:var(--muted); min-height:44px; }
+.resume-panel summary:focus-visible { outline:2px solid var(--accent); outline-offset:3px; }
+.resume-candidate { border:1px solid var(--border); background:var(--bg); border-radius:var(--control-radius); padding:var(--s4); margin:var(--s3) 0; overflow-wrap:anywhere; }
+.resume-choice { display:flex; gap:var(--s3); align-items:flex-start; min-height:44px; cursor:pointer; }.resume-choice input { margin-top:var(--s1); width:20px; height:20px; flex-shrink:0; accent-color:var(--accent); }.resume-choice span span { display:block; }
+.resume-draft-grid { display:grid; grid-template-columns:minmax(0,1.6fr) minmax(0,1fr); gap:var(--s6); }
+.resume-source { background:var(--surface); padding:var(--s4); border:1px solid var(--border); border-radius:var(--control-radius); align-self:start; }
+.resume-source h4 { margin:0 0 var(--s3); font-size:var(--body); }.resume-source p { white-space:pre-wrap; font-size:var(--small); color:var(--muted); }
+.resume-warning { border-left:3px solid var(--warning); padding:var(--s3); background:var(--warning-bg); }
+.resume-extracted { border-top:1px solid var(--border); }.resume-panel input[type=file] { max-width:100%; }
+@media(max-width:720px) { .resume-panel { padding:var(--s4); }.resume-heading { align-items:flex-start; flex-direction:column; }.resume-draft-grid { grid-template-columns:1fr; } }

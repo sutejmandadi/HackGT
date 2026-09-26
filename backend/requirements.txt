@@ -7,3 +7,5 @@ transformers
 google-genai
 supabase
 python-dotenv
+
+pypdf>=6.19,<7

@@ -68,3 +68,19 @@ export async function importLocalStories(ownerId: string) {
   return data.length;
 }
 
+
+// One atomic batch, stable IDs and ignoreDuplicates make retries safe even when
+// the server committed but the response was lost. Never overwrite existing rows.
+export async function saveResumeStories(stories: Story[], ownerId: string) {
+  if (!stories.length) return [];
+  if (stories.length > 40 || stories.some((s) => !s.title.trim() || s.title.trim().length > 160)) {
+    throw new Error("Import up to 40 stories, each with a title of 1–160 characters");
+  }
+  const client = getSupabase();
+  const { error } = await client.from("stories").upsert(stories.map((s) => toRow(s, ownerId)), { onConflict: "id", ignoreDuplicates: true });
+  if (error) throw new Error(error.message);
+  const { data, error: readError } = await client.from("stories").select("*").eq("owner_id", ownerId).in("id", stories.map((s) => s.id));
+  if (readError || data?.length !== stories.length) throw new Error(readError?.message || "Could not verify all saved stories");
+  const saved = data.map(fromRow);
+  return stories.map((s) => saved.find((row) => row.id === s.id)!);
+}

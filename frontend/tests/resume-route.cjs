@@ -1,0 +1,46 @@
+/* eslint-disable @typescript-eslint/no-require-imports -- Isolated Node route regression harness. */
+const fs = require('node:fs');
+const assert = require('node:assert/strict');
+const Module = require('node:module');
+const path = require('node:path');
+const ts = require('typescript');
+const filename = path.resolve(__dirname, '../app/api/resume/route.ts');
+const code = ts.transpileModule(fs.readFileSync(filename, 'utf8'), { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 } }).outputText;
+const mod = new Module(filename); mod.paths = Module._nodeModulePaths(path.dirname(filename));
+let validSession = true;
+mod.require = (name) => name === '@supabase/supabase-js' ? { createClient: () => ({ auth: { getUser: async () => ({ data: { user: validSession ? { id: 'test' } : null }, error: null }) } }) } : require(name);
+mod._compile(code, filename);
+const { POST } = mod.exports;
+const request = (body = 'PROJECTS\nExample\n• Built an app.', type = 'text/plain', headers = {}) => new Request('http://localhost/api/resume', { method: 'POST', headers: { 'Content-Type': type, ...headers }, body });
+(async () => {
+  process.env.NODE_ENV = 'development';
+  delete process.env.NEXT_PUBLIC_SUPABASE_URL; delete process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+  assert.equal((await POST(request('zip', 'application/zip'))).status, 415);
+  assert.equal((await POST(request(''))).status, 400);
+  assert.equal((await POST(request('small', 'text/plain', { 'Content-Length': 6000000 }))).status, 413);
+  assert.equal((await POST(request('a'.repeat(5 * 1024 * 1024 + 1)))).status, 413);
+  const data = { stories: [], warnings: [], extractedText: 'sample', method: 'rules' };
+  global.fetch = async (url, options) => {
+    assert.match(url, /\/api\/resume\/parse$/);
+    assert.equal(options.headers['Content-Type'], 'text/plain');
+    assert.match(options.body.toString(), /PROJECTS/);
+    return Response.json(data);
+  };
+  assert.deepEqual(await (await POST(request())).json(), data);
+  global.fetch = async () => Response.json({ detail: 'Unreadable PDF' }, { status: 422 });
+  const invalid = await POST(request('%PDF-bad', 'application/pdf'));
+  assert.equal(invalid.status, 422); assert.equal((await invalid.json()).error, 'Unreadable PDF');
+  global.fetch = async () => { throw new Error('offline'); };
+  assert.equal((await POST(request())).status, 503);
+  process.env.NODE_ENV = 'production';
+  assert.equal((await POST(request())).status, 503);
+  process.env.NEXT_PUBLIC_SUPABASE_URL = 'https://example.supabase.co';
+  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY = 'public-test';
+  assert.equal((await POST(request())).status, 401);
+  validSession = false;
+  assert.equal((await POST(request(undefined, undefined, { Authorization: 'Bearer invalid' }))).status, 401);
+  validSession = true;
+  global.fetch = async () => Response.json(data);
+  assert.equal((await POST(request(undefined, undefined, { Authorization: 'Bearer valid' }))).status, 200);
+  console.log('11 resume route checks passed: authentication, limits, raw forwarding, errors, and unavailable service.');
+})().catch((error) => { console.error(error); process.exitCode = 1; });
