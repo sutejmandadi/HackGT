@@ -113,7 +113,7 @@ async def transcribe(wav, duration, provider):
     try:
         async with httpx.AsyncClient(timeout=75) as client:
             response = await client.post('https://api.deepgram.com/v1/listen',
-                params={'model':os.getenv('DEEPGRAM_MODEL','nova-3'),'language':'en','punctuate':'true','filler_words':'true','smart_format':'false'},
+                params={'model':os.getenv('DEEPGRAM_MODEL','nova-3'),'language':'en','punctuate':'true','smart_format':'false'},
                 headers={'Authorization':'Token '+os.environ['DEEPGRAM_API_KEY'],'Content-Type':'audio/wav'},content=wav)
         if response.status_code in (401,403):
             raise ValueError('The transcription provider rejected its API key. Update DEEPGRAM_API_KEY on the server.')

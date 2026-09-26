@@ -1,5 +1,5 @@
 import { cloudConfigured, getSupabase } from "./supabase";
-import { isAttempt, type Attempt } from "./practice-types";
+import { currentReport, isAttempt, type Attempt } from "./practice-types";
 const KEY = "mecode.practice-attempts.v1";
 export async function practiceHeaders(): Promise<Record<string,string>> {
   if (!cloudConfigured) return {};
@@ -10,7 +10,7 @@ export async function practiceHeaders(): Promise<Record<string,string>> {
 function localAttempts(): Attempt[] {
   const data: unknown = JSON.parse(localStorage.getItem(KEY) || "[]");
   if (!Array.isArray(data) || !data.every(isAttempt)) throw new Error("Local reports could not be read. Existing data is preserved.");
-  return data;
+  return data.map(currentReport);
 }
 export function saveLocalAttempt(attempt: Attempt) {
   if (cloudConfigured) throw new Error("Local fallback is disabled in cloud mode.");
@@ -23,7 +23,7 @@ export async function listAttempts(offset=0): Promise<{ attempts: Attempt[]; tot
   const data=await res.json();
   if (!res.ok) throw new Error(data.error || "Could not load reports.");
   if (!Array.isArray(data.attempts) || !data.attempts.every(isAttempt)) throw new Error("Unexpected report data. Please retry.");
-  return data;
+  return {...data,attempts:data.attempts.map(currentReport)};
 }
 export async function deleteAttempt(id: string) {
   if (!cloudConfigured) { localStorage.setItem(KEY,JSON.stringify(localAttempts().filter(a=>a.id!==id))); return; }

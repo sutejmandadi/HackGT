@@ -622,10 +622,6 @@ export default function QuestionBank({
 
                   <h3 className="qb-card-prompt">“{question.prompt}”</h3>
 
-                  <div className="qb-card-tip">
-                    <strong>Interviewer angle:</strong> {question.coachTip}
-                  </div>
-
                   {noteText && (
                     <div className="qb-card-note-preview">
                       <span className="muted">Note:</span> {noteText}
@@ -703,7 +699,7 @@ export default function QuestionBank({
                       className="primary qb-card-practice-btn"
                       onClick={() => startPractice(index)}
                     >
-                      ⚡ Practice Answering
+                      Practice Answering
                     </button>
                   </div>
                 </div>

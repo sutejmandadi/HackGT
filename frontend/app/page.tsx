@@ -189,8 +189,8 @@ function StoryBank({
         <div className="workspace-tabs" role="tablist" aria-label="MeCode workspace">
           {([
             { id: "stories", label: "Stories" },
-            { id: "matrix", label: "Strength matrix" },
-            { id: "questions", label: "Question bank (50)" },
+            { id: "matrix", label: "Strength Matrix" },
+            { id: "questions", label: "Question Bank (50)" },
             { id: "reports", label: "Reports" },
           ] as const).map(({ id: tab, label }) => (
             <button

@@ -11,7 +11,7 @@ from unittest.mock import AsyncMock, patch
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from practice_models import Segment, Word, Metadata
-from practice_metrics import metrics, analyze, score_components, fill
+from practice_metrics import metrics, analyze, score_components
 from practice_audio import normalize, segment_words, provider_name, transcribe
 from practice_routes import router
 from practice_store import authenticate, Store
@@ -48,11 +48,6 @@ class MetricsTests(unittest.TestCase):
                   for i,k in enumerate(['situation','task','actions','result'])]
         m=metrics(sections,12)
         self.assertLess(score_components(m,sections)['Structure'],50)
-
-    def test_filler_precision(self):
-        s=segment('Um, I like coding. It looks like rain. Uh, you know, I mean, like, really.')
-        detected=fill(s)
-        self.assertEqual([f['type'] for f in detected],['um','uh','you know','i mean','like (discourse cue)'])
 
     def test_pauses_and_star(self):
         segments=[segment('The release was blocked.',section='situation'),segment('I built a queue.',start=6,section='actions',index=1)]
@@ -122,7 +117,6 @@ class MetricsTests(unittest.TestCase):
         self.assertEqual(len(segments),5)
         m,a=analyze(segments,60,META['prompt'],'leadership',is_mock=True)
         self.assertTrue(any('DEMO' in l for l in a.limitations))
-        self.assertEqual(m['filler_count'],2)
 
 class ApiTests(unittest.TestCase):
     def setUp(self):

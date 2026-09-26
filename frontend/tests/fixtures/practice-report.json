@@ -86,8 +86,7 @@
       "relevance": null,
       "evidence": false,
       "vague": false,
-      "wpm": 77.8,
-      "fillers": []
+      "wpm": 77.8
     },
     {
       "index": 1,
@@ -166,8 +165,7 @@
       "relevance": null,
       "evidence": false,
       "vague": false,
-      "wpm": 77.8,
-      "fillers": []
+      "wpm": 77.8
     },
     {
       "index": 2,
@@ -258,15 +256,7 @@
       "relevance": null,
       "evidence": true,
       "vague": false,
-      "wpm": 77.5,
-      "fillers": [
-        {
-          "type": "um",
-          "start": 18.947,
-          "end": 19.539,
-          "segment": 2
-        }
-      ]
+      "wpm": 77.5
     },
     {
       "index": 3,
@@ -363,15 +353,7 @@
       "relevance": null,
       "evidence": true,
       "vague": false,
-      "wpm": 77.4,
-      "fillers": [
-        {
-          "type": "you know",
-          "start": 37.105,
-          "end": 38.487,
-          "segment": 3
-        }
-      ]
+      "wpm": 77.4
     },
     {
       "index": 4,
@@ -486,36 +468,15 @@
       "relevance": null,
       "evidence": true,
       "vague": false,
-      "wpm": 77.1,
-      "fillers": []
+      "wpm": 77.1
     }
   ],
   "metrics": {
-    "duration": 60,
+    "duration": 60.0,
     "total_words": 66,
     "wpm": 66.0,
     "speaking_wpm": 101.3,
     "pace_definition": "WPM uses total recording time. Speaking WPM uses the sum of recognized word durations, not a physiological articulation measure.",
-    "filler_count": 2,
-    "filler_rate": 2.0,
-    "filler_types": {
-      "um": 1,
-      "you know": 1
-    },
-    "fillers": [
-      {
-        "type": "um",
-        "start": 18.947,
-        "end": 19.539,
-        "segment": 2
-      },
-      {
-        "type": "you know",
-        "start": 37.105,
-        "end": 38.487,
-        "segment": 3
-      }
-    ],
     "pauses": [
       {
         "start": 0.0,
@@ -525,7 +486,7 @@
       },
       {
         "start": 53.487,
-        "end": 60,
+        "end": 60.0,
         "seconds": 6.51,
         "long": true
       }
@@ -572,13 +533,13 @@
   },
   "analysis": {
     "scores": {
-      "Delivery": 58.7,
-      "Structure": 75.0,
+      "Delivery": 33.8,
+      "Structure": 56.7,
       "Specificity": 100.0,
       "Impact": 0.0,
-      "Overall": 58.4
+      "Overall": 47.6
     },
-    "score_explanation": "coaching-1.0: Overall is the equal mean of available subscores. Delivery = 65% pace (110–170 WPM coaching target, 1.2 points lost per WPM outside) + 35% filler control (100 minus 10 × fillers/minute). Structure = 25 per detected STAR section with ≥5 words. Specificity = 25 per segment with a numeric mention + 15 per segment with a decision/verification cue, capped at 100. Relevance = mean local semantic similarity ×200, clipped to 0–100; omitted if unavailable. Impact = 40 for a Result, 40 for numeric Result detail, 20 for a Result lesson. This heuristic rubric is not a hiring assessment.",
+    "score_explanation": "Overall averages the available category scores. Delivery weights pace around 145 WPM (70%) and long-gap control (30%). Structure combines meaningful STAR coverage (50%), a 15/10/50/25 time balance (35%), and section order (15%), scaled by coverage. Specificity rewards personal actions (25%), reasoning (25%), verification (20%), concrete detail (20%), and precise wording (10%), scaled by action depth and repetition. Relevance uses word-weighted semantic similarity, mapped from 0.05\u20130.75 to 0\u2013100; it is omitted when unavailable. Impact rewards an observable outcome (35%), a measure (25%), learning (20%), and a causal link (20%), scaled by result detail. Targets are adjustable coaching heuristics, not validated hiring standards.",
     "summary": "End with what changed, a truthful measure if available, or a concrete lesson.",
     "strengths": [
       {
@@ -608,17 +569,16 @@
       },
       {
         "kind": "recommendation",
-        "text": "2 possible fillers were counted. At the marked transitions, use a brief silent pause instead of a filler.",
+        "text": "Rehearse the highlighted action in two sentences: what you chose, then why that choice mattered.",
         "segments": [
-          2,
-          3
+          2
         ]
       },
       {
         "kind": "recommendation",
-        "text": "Rehearse the highlighted action in two sentences: what you chose, then why that choice mattered.",
+        "text": "Tie the final sentence directly to the question; explain what this example demonstrates.",
         "segments": [
-          2
+          4
         ]
       }
     ],
@@ -677,7 +637,7 @@
     ],
     "confidence": "limited",
     "limitations": [
-      "Transcription can omit fillers or mishear numbers; check the transcript.",
+      "Transcription can miss words or mishear numbers; check the transcript.",
       "STAR and relevance use an uncalibrated local similarity model, not a trained interview evaluator.",
       "Numeric mentions are evidence cues, not fact checking. Vague-word flags do not prove a claim is unsupported.",
       "No assessment of personality, honesty, emotion, confidence, accent, or employability.",
@@ -685,14 +645,14 @@
       "DEMO FIXTURE: the transcript is synthetic and does not describe this recording."
     ],
     "semantic_method": "rules-only (semantic model unavailable)",
-    "intent_assessment": "Semantic overlap is a preliminary relevance signal; it cannot establish that the interviewer’s intent was fully answered.",
+    "intent_assessment": "Semantic overlap is a preliminary relevance signal; it cannot establish that the interviewer\u2019s intent was fully answered.",
     "ownership_clarity": "4 individual versus 2 team pronouns. Team language is appropriate; clarify your own decision when relevant.",
     "action_depth": "2 segments contain decision or verification cues. Inspect the linked transcript, not just the count.",
     "result_strength": "0 Result segments; 0 include a numeric mention.",
     "coherence": "0 backward transitions in inferred STAR order. This is a review cue, not a logical-coherence verdict."
   },
   "pipeline_version": "interview-mri-1.0",
-  "rubric_version": "coaching-1.0",
+  "rubric_version": "coaching-3.0",
   "is_mock": true,
   "error": null
 }

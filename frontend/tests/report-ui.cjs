@@ -1,0 +1,47 @@
+/* eslint-disable @typescript-eslint/no-require-imports -- Standalone Playwright browser regression suite. */
+const {chromium}=require('playwright');
+const assert=require('node:assert/strict');const path=require('node:path');const fs=require('node:fs');const os=require('node:os');
+const output=fs.mkdtempSync(path.join(os.tmpdir(),'mecode-practice-'));
+const config=fs.readFileSync(path.resolve(__dirname,'../.env.local'),'utf8');
+const projectUrl=config.match(/^NEXT_PUBLIC_SUPABASE_URL=(.+)$/m)?.[1].trim();
+if(!projectUrl)throw new Error('Browser test requires the frontend public Supabase URL configuration. No real authentication or database writes are used.');
+const ref=new URL(projectUrl).hostname.split('.')[0];
+(async()=>{
+ const browser=await chromium.launch({channel:'msedge',headless:true,args:['--use-fake-device-for-media-stream','--use-fake-ui-for-media-stream']});
+ const context=await browser.newContext({viewport:{width:1440,height:1000},permissions:['microphone']});
+ const uid='a2b6c429-c6e8-4e6e-9d45-a3f77c253ca1',exp=Math.floor(Date.now()/1000)+3600;
+ const user={id:uid,email:'practice-test@example.test',aud:'authenticated',role:'authenticated',app_metadata:{},user_metadata:{},created_at:new Date().toISOString()};
+ const token=[Buffer.from(JSON.stringify({alg:'HS256',typ:'JWT'})).toString('base64url'),Buffer.from(JSON.stringify({sub:uid,exp,role:'authenticated'})).toString('base64url'),'test'].join('.');
+ await context.addInitScript(({user,token,exp,ref})=>localStorage.setItem(`sb-${ref}-auth-token`,JSON.stringify({user,access_token:token,refresh_token:'test',expires_at:exp,expires_in:3600,token_type:'bearer'})),{user,token,exp,ref});
+ await context.route(`${projectUrl}/**`,route=>route.fulfill({json:route.request().url().includes('/auth/')?user:[]}));
+
+ const fixture=JSON.parse(fs.readFileSync(path.join(__dirname,'fixtures/practice-report.json'),'utf8'));
+ await context.route('**/api/practice*',route=>route.fulfill({json:{attempts:[fixture],total:1,next:null}}));
+ const page=await context.newPage();
+ await page.goto('http://localhost:3000');
+ await page.getByRole('tab',{name:'Strength Matrix',exact:true}).waitFor();
+ await page.getByRole('tab',{name:'Question Bank (50)',exact:true}).click();
+ assert.equal(await page.locator('.qb-card-tip').count(),0);
+ assert.equal((await page.locator('.qb-card-practice-btn').first().innerText()).trim(),'Practice Answering');
+ await page.screenshot({path:path.join(output,'questions.png'),fullPage:false});
+ await page.getByRole('tab',{name:'Reports',exact:true}).click();
+ await page.getByRole('heading',{name:'Progress and Trends',exact:true}).waitFor();
+ assert(await page.locator('.report-score-grid').first().isVisible());
+ assert(!/Best|best/.test(await page.locator('.question-history summary').innerText()));
+ await page.locator('.question-history summary').click();
+ const opener=page.locator('.attempt-row .text-button').first();await opener.click();
+ await page.getByRole('dialog').waitFor();
+ assert(await page.locator('dialog').evaluate(el=>el.matches(':modal')));
+ await page.keyboard.press('Escape');
+ assert.equal(await page.getByRole('dialog').count(),0);
+ assert(await opener.evaluate(el=>document.activeElement===el));
+ await opener.click();
+ await page.screenshot({path:path.join(output,'report-modal.png'),fullPage:false});
+ await page.setViewportSize({width:390,height:844});
+ assert(await page.locator('dialog').evaluate(el=>el.scrollWidth<=el.clientWidth));
+ await page.screenshot({path:path.join(output,'report-modal-mobile.png'),fullPage:false});
+ await page.getByRole('button',{name:'Close report',exact:true}).click();
+ assert.equal(await page.getByRole('dialog').count(),0);
+ console.log('UI checks passed: labels, minimal cards, visible progress, absent empty best label, modal, Escape, focus restoration, close button, mobile sizing. Screenshots:',output);
+ await browser.close();
+})().catch(e=>{console.error(e);process.exit(1);});

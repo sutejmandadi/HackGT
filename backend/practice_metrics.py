@@ -4,8 +4,6 @@ from collections import Counter
 from practice_models import Segment, Analysis, Feedback, RUBRIC
 from resume_parser import ANCHORS, classify
 
-FILLERS = {"um", "uh", "erm", "er", "hmm"}
-FILLER_PHRASES = {("you", "know"), ("i", "mean")}
 TOKEN = re.compile(r"\b[\w]+(?:['’-][\w]+)*\b")
 NUMBER = re.compile(r"\b\d+(?:[.,]\d+)*(?:%|\b)|\b(?:one|two|three|four|five|six|seven|eight|nine|ten|hundred|thousand|million)\b", re.I)
 VAGUE = re.compile(r"\b(?:things|stuff|somehow|very good|really great|a lot better|helped a lot)\b", re.I)
@@ -17,33 +15,14 @@ KEYS = ["situation", "task", "actions", "result", "unknown"]
 def words(text):
     return TOKEN.findall(text)
 
-def fill(segment):
-    found = []
-    tokens = [re.sub(r"[^a-z'-]", "", w.text.lower()) for w in segment.words]
-    skip = -1
-    for i, (token, word) in enumerate(zip(tokens, segment.words)):
-        if i <= skip:
-            continue
-        kind = token if token in FILLERS else None
-        if tuple(tokens[i:i+2]) in FILLER_PHRASES:
-            kind = " ".join(tokens[i:i+2]); skip = i+1
-        # Conservative discourse-like only; excludes 'I like', 'looks like', 'like X'.
-        if token == "like" and word.text.endswith(",") and (i == 0 or segment.words[i-1].text.endswith(",")):
-            kind = "like (discourse cue)"
-        if kind:
-            found.append({"type": kind, "start": word.start, "end": segment.words[min(skip if skip >= i else i, len(tokens)-1)].end, "segment": segment.index})
-    return found
-
 def metrics(segments: list[Segment], duration: float, activity: dict | None = None):
     text = " ".join(s.text for s in segments)
     count = len(words(text))
     allocation = {k: {"words": 0, "seconds": 0.0, "percent": 0.0} for k in KEYS}
-    fillers = []
     all_words = [w for s in segments for w in s.words]
     for s in segments:
         n = len(words(s.text))
         s.wpm = round(n * 60 / max(s.end-s.start, .1), 1)
-        s.fillers = fill(s); fillers.extend(s.fillers)
         allocation[s.star]["words"] += n
         allocation[s.star]["seconds"] += s.end-s.start
     spans = sum(v['seconds'] for v in allocation.values())
@@ -70,8 +49,6 @@ def metrics(segments: list[Segment], duration: float, activity: dict | None = No
         "duration": round(duration,2), "total_words": count, "wpm": round(count*60/max(duration,.1),1),
         "speaking_wpm": round(count*60/max(sum(w.end-w.start for w in all_words),.1),1),
         "pace_definition": "WPM uses total recording time. Speaking WPM uses the sum of recognized word durations, not a physiological articulation measure.",
-        "filler_count": len(fillers), "filler_rate": round(len(fillers)*60/max(duration,.1),2),
-        "filler_types": dict(Counter(f['type'] for f in fillers)), "fillers": fillers,
         "pauses": pauses, "pause_definition": "Gaps of at least 1.5s between recognized words; long gaps are at least 3s. These may include noise or unrecognized speech.",
         "repeated_phrases": repeated, "repeated_words": dict(repeated_words),
         "average_sentence_length": round(count/max(len(sentences),1),1), "longest_monologue": round(longest,2),
@@ -112,9 +89,8 @@ def score_components(m, segments):
     def clamp(value): return max(0.0, min(1.0, value))
     n = max(m['total_words'], 1)
     pace = clamp(1 - abs(m['wpm']-145)/100)
-    fluency = clamp(1-m['filler_rate']/8)
     gap_ratio = sum(p['seconds'] for p in m['pauses'] if p['long'])/max(m['duration'],1)
-    delivery = 100*(.5*pace + .3*fluency + .2*clamp(1-gap_ratio/.3))
+    delivery = 100*(.7*pace + .3*clamp(1-gap_ratio/.3))
     target = {'situation':.15,'task':.10,'actions':.50,'result':.25}
     coverage = sum(clamp(m['star'][k]['words']/minimum) for k,minimum in
                    [('situation',12),('task',10),('actions',30),('result',18)])/4
@@ -172,9 +148,6 @@ def analyze(segments, duration, prompt, competency, model=None, activity=None, i
     vague = [s for s in segments if s.vague]
     if vague:
         improvements.append(feedback('recommendation','Replace vague wording in the highlighted passage with the specific object, decision, or observable change.',vague[:2]))
-    if m['filler_count']:
-        affected = [s for s in segments if s.fillers]
-        improvements.append(feedback('recommendation',f"{m['filler_count']} possible fillers were counted. At the marked transitions, use a brief silent pause instead of a filler.",affected[:2]))
     if by_star['result'] and not any(s.evidence for s in by_star['result']):
         improvements.append(feedback('recommendation','Your detected Result has no numeric detail. Add a real measure if you have one; otherwise describe an observable outcome without inventing a number.',by_star['result']))
     improvements.extend([
@@ -199,12 +172,12 @@ def analyze(segments, duration, prompt, competency, model=None, activity=None, i
     backwards = sum(b<a for a,b in zip(ordering,ordering[1:]))
     analysis = Analysis(
         scores=scores,
-        score_explanation="Overall averages the available category scores. Delivery weights pace around 145 WPM (50%), filler control (30%), and long-gap control (20%). Structure combines meaningful STAR coverage (50%), a 15/10/50/25 time balance (35%), and section order (15%), scaled by coverage. Specificity rewards personal actions (25%), reasoning (25%), verification (20%), concrete detail (20%), and precise wording (10%), scaled by action depth and repetition. Relevance uses word-weighted semantic similarity, mapped from 0.05–0.75 to 0–100; it is omitted when unavailable. Impact rewards an observable outcome (35%), a measure (25%), learning (20%), and a causal link (20%), scaled by result detail. Targets are adjustable coaching heuristics, not validated hiring standards.",
+        score_explanation="Overall averages the available category scores. Delivery weights pace around 145 WPM (70%) and long-gap control (30%). Structure combines meaningful STAR coverage (50%), a 15/10/50/25 time balance (35%), and section order (15%), scaled by coverage. Specificity rewards personal actions (25%), reasoning (25%), verification (20%), concrete detail (20%), and precise wording (10%), scaled by action depth and repetition. Relevance uses word-weighted semantic similarity, mapped from 0.05–0.75 to 0–100; it is omitted when unavailable. Impact rewards an observable outcome (35%), a measure (25%), learning (20%), and a causal link (20%), scaled by result detail. Targets are adjustable coaching heuristics, not validated hiring standards.",
         summary=improvements[0].text,
         strengths=strengths[:2], improvements=improvements[:3], exercise="Record another answer using four short beats: context, your responsibility, your decision and reason, then the observable outcome. " + improvements[0].text,
         outline=[{"section":k, "segments":[s.index for s in by_star[k]], "prompt":p} for k,p in zip(KEYS[:4],['One sentence: what problem mattered?','One sentence: what did you own?','Two sentences: what did you decide, do, and verify?','One sentence: what changed or what did you learn?'])],
         intersections=intersections, confidence='limited' if is_mock or m['total_words']<60 or model is None else 'moderate',
-        limitations=['Transcription can omit fillers or mishear numbers; check the transcript.', 'STAR and relevance use an uncalibrated local similarity model, not a trained interview evaluator.', 'Numeric mentions are evidence cues, not fact checking. Vague-word flags do not prove a claim is unsupported.', 'No assessment of personality, honesty, emotion, confidence, accent, or employability.', 'Sentence boundaries depend on transcription punctuation. Segment time is not the same as pure speech time.'] + (['DEMO FIXTURE: the transcript is synthetic and does not describe this recording.'] if is_mock else []),
+        limitations=['Transcription can miss words or mishear numbers; check the transcript.', 'STAR and relevance use an uncalibrated local similarity model, not a trained interview evaluator.', 'Numeric mentions are evidence cues, not fact checking. Vague-word flags do not prove a claim is unsupported.', 'No assessment of personality, honesty, emotion, confidence, accent, or employability.', 'Sentence boundaries depend on transcription punctuation. Segment time is not the same as pure speech time.'] + (['DEMO FIXTURE: the transcript is synthetic and does not describe this recording.'] if is_mock else []),
         semantic_method=method,
         intent_assessment='Semantic overlap is a preliminary relevance signal; it cannot establish that the interviewer’s intent was fully answered.',
         ownership_clarity=f"{ownership['individual']} individual versus {ownership['team']} team pronouns. Team language is appropriate; clarify your own decision when relevant.",

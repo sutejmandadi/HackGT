@@ -5,9 +5,8 @@ export function realAttempts(attempts:Attempt[]){
 export function compareAttempts(before:Attempt,after:Attempt){
   if(before.question_id!==after.question_id||before.is_mock||after.is_mock||before.rubric_version!==after.rubric_version||before.pipeline_version!==after.pipeline_version)return ["Compare real attempts of the same question and analysis version."];
   const delta=(n:number)=>`${n>0?"+":""}${Math.round(n*10)/10}`;
-  const notes=[`Preliminary comparison: score ${delta(after.analysis.scores.Overall-before.analysis.scores.Overall)}, pace ${delta(after.metrics.wpm-before.metrics.wpm)} WPM, fillers ${delta(after.metrics.filler_rate-before.metrics.filler_rate)}/min, duration ${delta(after.duration-before.duration)}s.`];
+  const notes=[`Preliminary comparison: score ${delta(after.analysis.scores.Overall-before.analysis.scores.Overall)}, pace ${delta(after.metrics.wpm-before.metrics.wpm)} WPM, duration ${delta(after.duration-before.duration)}s.`];
   if(after.duration<before.duration && after.metrics.numeric_mentions<before.metrics.numeric_mentions)notes.push("The later answer is shorter but contains fewer numeric details. Review both transcripts to check whether useful evidence was lost.");
-  if(after.metrics.filler_rate<before.metrics.filler_rate)notes.push("The later transcript has fewer detected fillers per minute. Transcription differences can affect this measure.");
   return notes;
 }
 export function patterns(attempts:Attempt[]):{text:string;ids:string[]}[]{
@@ -38,8 +37,6 @@ export function patterns(attempts:Attempt[]):{text:string;ids:string[]}[]{
   for(const a of rows)if(a.linked_story_id)storyGroups.set(a.linked_story_id,[...(storyGroups.get(a.linked_story_id)||[]),a]);
   const reusedStory=[...storyGroups.values()].find(group=>group.length>=3&&new Set(group.map(a=>a.question_id)).size>=2);
   if(reusedStory)result.push({text:`One linked story appears in ${reusedStory.length} attempts across multiple questions. Check that each answer targets the specific prompt.`,ids:reusedStory.map(a=>a.id)});
-  const clustered=rows.filter(a=>a.segments.some(s=>s.fillers.length>=3));
-  if(clustered.length>=3)result.push({text:`Filler clusters (at least three in one transcript segment) appear in ${clustered.length} attempts. Inspect the marked transitions and practice a brief silent pause.`,ids:clustered.map(a=>a.id)});
   if(rows.length>=6){
     const first=rows.slice(0,3),last=rows.slice(-3),avg=(a:Attempt[],key:string)=>a.reduce((n,x)=>n+x.analysis.scores[key],0)/a.length;
     result.push({text:`Preliminary trend, earliest three versus latest three comparable attempts: overall ${avg(first,'Overall').toFixed(0)} → ${avg(last,'Overall').toFixed(0)}; specificity ${avg(first,'Specificity').toFixed(0)} → ${avg(last,'Specificity').toFixed(0)}. Different prompts and stories can affect this comparison.`,ids:[...first,...last].map(a=>a.id)});

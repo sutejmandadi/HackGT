@@ -59,7 +59,6 @@ locks question/filter/workspace navigation and sign-out until analyzed or discar
    ceiling. Shell execution and network input protocols are disabled. Temporary
    files are cleaned on success and failure; valid recordings over 300s are rejected.
 5. A provider abstraction calls Deepgram Nova-3 with punctuation, timestamps, and
-   `filler_words=true`, or supplies the explicit development fixture.
 6. Python computes metrics and runs local MiniLM semantic similarity plus explicit
    STAR cues. The `Report`/`Analysis` Pydantic schemas validate the output. Transcript
    content is treated solely as data; no tools, instructions, or generated SQL are
@@ -111,10 +110,7 @@ formula, semantic method, confidence/limitations, evidence indices, and original
   time, not full recording time. Unknown classifications remain visible.
 - Gaps ≥1.5s are meaningful pauses; ≥3s are long. Word gaps may include unrecognized
   speech/noise. RMS active/quiet estimates use 20ms windows and are explicitly approximate.
-- Fillers are centralized in `practice_metrics.py`: um, uh, erm, er, hmm, “you know,”
-  “I mean,” and conservatively punctuated discourse “like.” “I like coding” and
-  “looks like rain” are not counted. Phrase matches remain possible filler cues,
-  not certain linguistic judgments. The ASR may omit or mishear fillers.
+
 - Numeric mentions (including spelled-out small numbers) are counted as evidence
   cues, not verified business outcomes. Vague-word matches are specificity cues;
   they do not establish whether a claim is truthful or supported in real life.
@@ -163,7 +159,6 @@ node tests/strength-grid-route.cjs
 npx.cmd supabase db query --linked --file supabase/tests/practice_rls.sql
 ```
 
-Tests cover WPM, fillers/false positives, pauses, STAR allocation, score composition,
 decoding/duration limits, provider configuration, API/auth validation, persistence
 errors, local save/retrieve/delete, version/sample-size comparison gates, streaming,
 and RLS owner isolation/cascade deletion/idempotency. Browser verification uses a
@@ -198,12 +193,12 @@ port 8001 test server afterward; the normal backend uses port 8000.
 ## Report UI and rubric 2.0
 
 Reports now open as compact question groups, with no report automatically expanded.
-Select an attempt to view it; Close report returns to the compact list. Progress,
-transcript analysis, and detailed coaching are expandable. Sample reports hide
+Select an attempt to open its centered dialog; Close report returns to the list.
+Progress is visible immediately. Transcript analysis and detailed coaching are expandable. Sample reports hide
 scores and pacing because synthetic timestamps cannot measure a user's delivery.
 Mock/demo/fixture all refer to the same fixed example transcript, not live recognition.
 
-New reports use coaching-2.0: continuous pace scoring; STAR coverage, balance and
+New reports use coaching-3.0: continuous pace scoring; STAR coverage, balance and
 order; bounded personal-action, reasoning and verification signals; word-weighted
 relevance; and outcome detail, measurement, learning and causal links. Short section
 mentions and repeated keywords no longer earn full credit. The report includes
@@ -223,6 +218,8 @@ transcription runs on the server, so hosting resources may cost money.
 
 Each recording is processed in a bounded worker process (150-second timeout), with
 temporary audio removed afterward. If processing times out, retry a shorter answer.
-Silence detection reduces hallucinations, but review every transcript. Whisper may
-omit fillers, so filler counts are estimates. Local reports have a distinct pipeline
-version to avoid comparing their transcription metrics with another provider.
+Silence detection reduces hallucinations, but review every transcript. Local reports
+use a distinct pipeline version to avoid comparisons across transcription providers.
+
+
+Rubric 3.0 uses pace (70%) and long-gap control (30%) for Delivery. Saved legacy reports are adapted on read, with recalculated Delivery and Overall and retired advice removed; original stored history is preserved.

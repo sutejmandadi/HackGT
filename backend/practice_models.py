@@ -3,7 +3,7 @@ from uuid import UUID
 from pydantic import BaseModel, Field, ConfigDict, model_validator
 
 PIPELINE = "interview-mri-1.0"
-RUBRIC = "coaching-2.0"
+RUBRIC = "coaching-3.0"
 STAR = Literal["situation", "task", "actions", "result", "unknown"]
 
 class Metadata(BaseModel):
@@ -36,7 +36,6 @@ class Segment(BaseModel):
     evidence: bool = False
     vague: bool = False
     wpm: float = 0
-    fillers: list[dict] = Field(default_factory=list)
 
 class Feedback(BaseModel):
     kind: Literal["observation", "inference", "recommendation"]

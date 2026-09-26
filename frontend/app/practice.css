@@ -24,7 +24,7 @@
 .coaching-list { padding-left:var(--s6); }.coaching-list li { margin:var(--s4) 0; }.evidence-links { margin-top:var(--s2); }.evidence-links .text-button { font-size:11px; min-height:36px; }
 .transcript-list { display:grid; gap:var(--s2); }.transcript-segment { display:block; text-align:left; padding:var(--s3); border:1px solid var(--border); background:var(--bg); color:var(--text); border-radius:var(--control-radius); }.transcript-segment span { display:block; }.transcript-segment.selected { border-color:var(--accent); }.transcript-segment strong { font-size:var(--small); color:var(--muted); }
 .report-facts { display:grid; grid-template-columns:1fr 1.4fr; gap:var(--s3); }.report-facts dt { color:var(--muted); }.report-facts dd { margin:0; }
-.report-chart-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:var(--s4); }.report-chart { margin:0; padding:var(--s3); background:var(--surface); border:1px solid var(--border); border-radius:var(--panel-radius); }.report-chart svg { width:100%; }.report-chart figcaption { font-size:var(--small); }
+.report-chart-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:var(--s4); }.report-chart { margin:0; padding:var(--s3); background:var(--surface); border:1px solid var(--border); border-radius:var(--panel-radius); }.report-chart svg { width:100%; }.report-chart figcaption { font-size:var(--small); }
 .star-balance { display:flex; flex-wrap:wrap; gap:var(--s4); margin:var(--s4) 0; }.star-balance>div { flex:1; min-width:120px; }.star-balance span,.star-balance meter { display:block; width:100%; }
 .question-history summary>span { display:block; margin-top:var(--s1); }.attempt-row { justify-content:space-between; border-top:1px solid var(--border); padding:var(--s2); }
 .report-skeleton { padding:var(--s8); border:1px solid var(--border); background:var(--raised); border-radius:var(--panel-radius); }
@@ -44,3 +44,12 @@
 .question-history summary>span { font-weight:400; font-size:var(--small); }
 .practice-recorder summary { cursor:pointer; padding:var(--s2) 0; min-height:44px; }
 .reports-workspace summary:hover,.practice-recorder summary:hover { color:var(--accent); }
+
+.report-dialog { position:fixed; inset:0; margin:auto; width:min(960px,calc(100vw - 32px)); max-height:calc(100dvh - 48px); padding:0; border:1px solid var(--border); border-radius:var(--panel-radius); background:var(--surface); color:var(--text); overflow:auto; }
+.report-dialog::backdrop { background:rgb(0 0 0 / 72%); }
+.report-dialog-toolbar { position:sticky; top:0; z-index:1; display:flex; align-items:center; justify-content:space-between; gap:16px; padding:12px 24px; border-bottom:1px solid var(--border); background:var(--surface); font-weight:600; }
+.report-dialog .selected-report { border:0; margin:0; }
+.progress-disclosure>h2 { margin:0; }
+.qb-cards-grid .qb-question-card { padding:24px; gap:16px; }
+.qb-question-card .qb-card-prompt { margin:8px 0 16px; line-height:1.6; }
+@media(max-width:720px) { .report-dialog { width:calc(100vw - 16px); max-height:calc(100dvh - 24px); }.report-dialog-toolbar { padding:12px 16px; } }

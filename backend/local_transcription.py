@@ -10,8 +10,7 @@ def recognize(path):
     model = WhisperModel(str(MODEL_DIR), device='cpu', compute_type='int8',
                          cpu_threads=4, local_files_only=True)
     segments, _ = model.transcribe(path, language='en', word_timestamps=True,
-        beam_size=5, vad_filter=True, condition_on_previous_text=False,
-        initial_prompt='Preserve spoken hesitations such as um, uh, and repetitions.')
+        beam_size=5, vad_filter=True, condition_on_previous_text=False)
     return [dict(text=w.word.strip(), start=w.start, end=w.end, confidence=w.probability)
             for segment in segments for w in (segment.words or []) if w.word.strip() and w.end>w.start]
 
