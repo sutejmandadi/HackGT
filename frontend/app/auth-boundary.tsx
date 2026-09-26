@@ -1,24 +1,50 @@
 "use client";
 
-import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { type User } from "@supabase/supabase-js";
 import { cloudConfigured, getSupabase } from "./supabase";
+import LandingPage from "./landing-page";
 
 export default function AuthBoundary({ children }: { children: (user: User | null) => ReactNode }) {
-  return cloudConfigured ? <CloudAuth>{children}</CloudAuth> : <>
-    <div className="connection-banner">Local-only mode · Database not configured. Your existing browser stories are available. Follow SUPABASE_SETUP.md to connect.</div>
-    {children(null)}
-  </>;
+  const [guestMode, setGuestMode] = useState(false);
+
+  if (guestMode) {
+    return <>
+      <div className="connection-banner">
+        <span>Demo mode · Saved in local browser storage</span>
+        {cloudConfigured && <button className="text-button" onClick={() => setGuestMode(false)}>Sign in to sync across devices</button>}
+      </div>
+      {children(null)}
+    </>;
+  }
+
+  return cloudConfigured ? (
+    <CloudAuth onContinueGuest={() => setGuestMode(true)}>{children}</CloudAuth>
+  ) : (
+    <LandingPage
+      onSignIn={async () => {}}
+      onSignUp={async () => {}}
+      onContinueGuest={() => setGuestMode(true)}
+      busy={false}
+      message="Local mode: Cloud database is not configured. Stories are stored on this device."
+      creating={false}
+      setCreating={() => {}}
+    />
+  );
 }
 
-function CloudAuth({ children }: { children: (user: User | null) => ReactNode }) {
+function CloudAuth({
+  children,
+  onContinueGuest,
+}: {
+  children: (user: User | null) => ReactNode;
+  onContinueGuest: () => void;
+}) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
   const [creating, setCreating] = useState(false);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [confirmationEmail, setConfirmationEmail] = useState("");
   const confirmationHeading = useRef<HTMLHeadingElement>(null);
 
@@ -40,23 +66,33 @@ function CloudAuth({ children }: { children: (user: User | null) => ReactNode })
       }).catch((error) => { if (active) { setMessage(String(error)); setLoading(false); } });
       return () => { active = false; subscription.unsubscribe(); };
     } catch {
-      // Configuration problems must not silently fall back to local storage.
       queueMicrotask(() => { if (active) { setMessage("Invalid Supabase configuration. Check .env.local and restart the dev server."); setLoading(false); } });
       return () => { active = false; };
     }
   }, []);
 
-  async function authenticate(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault(); setBusy(true); setMessage("");
+  async function handleSignIn(emailVal: string, passwordVal: string) {
+    setBusy(true); setMessage("");
     try {
       const supabase = getSupabase();
-      const { data, error } = creating
-        ? await supabase.auth.signUp({ email: email.trim(), password, options: { emailRedirectTo: window.location.origin } })
-        : await supabase.auth.signInWithPassword({ email: email.trim(), password });
+      const { error } = await supabase.auth.signInWithPassword({ email: emailVal.trim(), password: passwordVal });
       if (error) throw error;
-      setPassword("");
-      if (creating && !data.session) setConfirmationEmail(email.trim());
     } catch (error) { setMessage(error instanceof Error ? error.message : "Unable to sign in. Try again."); }
+    finally { setBusy(false); }
+  }
+
+  async function handleSignUp(emailVal: string, passwordVal: string) {
+    setBusy(true); setMessage("");
+    try {
+      const supabase = getSupabase();
+      const { data, error } = await supabase.auth.signUp({
+        email: emailVal.trim(),
+        password: passwordVal,
+        options: { emailRedirectTo: window.location.origin },
+      });
+      if (error) throw error;
+      if (!data.session) setConfirmationEmail(emailVal.trim());
+    } catch (error) { setMessage(error instanceof Error ? error.message : "Unable to create account. Try again."); }
     finally { setBusy(false); }
   }
 
@@ -91,16 +127,17 @@ function CloudAuth({ children }: { children: (user: User | null) => ReactNode })
       <button className="text-button" onClick={() => { setConfirmationEmail(""); setCreating(true); setMessage(""); }}>Use a different email</button>
     </section>
   </main>;
-  return <main className="auth-shell"><section className="editor">
-    <p className="eyebrow">MeCode</p><h1>{creating ? "Create your account" : "Welcome back"}</h1>
-    <p className="intro">Keep your stories private and access them across devices.</p>
-    <form onSubmit={authenticate}>
-      <label className="field">Email<input type="email" autoComplete="email" required value={email} onChange={(event) => setEmail(event.target.value)} /></label>
-      <label className="field">Password<input type="password" minLength={creating ? 8 : 1} autoComplete={creating ? "new-password" : "current-password"} required value={password} onChange={(event) => setPassword(event.target.value)} /></label>
-      <p role="status" className="save-feedback">{message}</p>
-      <button className="primary" disabled={busy}>{busy ? "Please wait…" : creating ? "Create account" : "Sign in"}</button>
-    </form>
-    <button className="text-button" disabled={busy} onClick={() => { setCreating(!creating); setMessage(""); }}>{creating ? "Already registered? Sign in" : "New here? Create an account"}</button>
-  </section></main>;
+
+  return (
+    <LandingPage
+      onSignIn={handleSignIn}
+      onSignUp={handleSignUp}
+      onContinueGuest={onContinueGuest}
+      busy={busy}
+      message={message}
+      creating={creating}
+      setCreating={setCreating}
+    />
+  );
 }
 
