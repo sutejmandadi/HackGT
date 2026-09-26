@@ -2712,3 +2712,515 @@ textarea { resize:vertical; min-height:112px; }
   border-color: #60a5fa;
   text-decoration: none;
 }
+
+/* ==========================================================================
+   Modern Raycast Strength Matrix Overhaul
+   ========================================================================== */
+
+.matrix-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.matrix-header-action {
+  display: flex;
+  align-items: center;
+}
+
+.matrix-disclaimer {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.55);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.matrix-glass-card {
+  background: rgba(17, 24, 33, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+}
+
+.matrix-empty-card {
+  padding: 48px 24px;
+  text-align: center;
+}
+
+.matrix-empty-card h2 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 12px 0 6px;
+}
+
+.matrix-table-modern {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  min-width: 680px;
+}
+
+.matrix-table-modern thead {
+  background: rgba(255, 255, 255, 0.02);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.matrix-th-story {
+  padding: 14px 20px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.45);
+  width: 32%;
+}
+
+.matrix-th-cat {
+  padding: 14px 12px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.45);
+  text-align: center;
+}
+
+.matrix-row {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  transition: background 140ms ease;
+}
+
+.matrix-row:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.matrix-story-cell {
+  padding: 16px 20px;
+  vertical-align: middle;
+}
+
+.matrix-story-title-btn {
+  background: none;
+  border: none;
+  color: #ffffff;
+  font-size: 13.5px;
+  font-weight: 650;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+  line-height: 1.4;
+  display: block;
+  transition: color 140ms ease;
+}
+
+.matrix-story-title-btn:hover {
+  color: #ff8e8e;
+  text-decoration: underline;
+}
+
+.matrix-story-status {
+  display: block;
+  font-size: 11.5px;
+  font-weight: 450;
+  color: rgba(255, 255, 255, 0.45);
+  margin-top: 4px;
+}
+
+.matrix-cell {
+  padding: 12px 8px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.matrix-score-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 68px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  font-family: var(--font-mono, monospace);
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  transition: all 150ms ease;
+  border: 1px solid transparent;
+}
+
+.matrix-score-pill.strong {
+  background: rgba(138, 221, 175, 0.12);
+  color: #8addaf;
+  border-color: rgba(138, 221, 175, 0.28);
+}
+
+.matrix-score-pill.moderate {
+  background: rgba(240, 203, 132, 0.12);
+  color: #f0cb84;
+  border-color: rgba(240, 203, 132, 0.28);
+}
+
+.matrix-score-pill.low {
+  background: rgba(255, 255, 255, 0.03);
+  color: rgba(255, 255, 255, 0.45);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.matrix-score-pill:hover {
+  transform: scale(1.05);
+}
+
+.matrix-score-pill.selected {
+  box-shadow: 0 0 0 2px #ff6363, 0 0 12px rgba(255, 99, 99, 0.4);
+  border-color: #ff6363 !important;
+}
+
+.matrix-empty-dash {
+  color: rgba(255, 255, 255, 0.25);
+  font-size: 13px;
+}
+
+.matrix-footer-row {
+  background: rgba(255, 255, 255, 0.03);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.matrix-avg-val {
+  font-size: 12px;
+  font-family: var(--font-mono, monospace);
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.matrix-summary-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.35fr;
+  gap: 20px;
+}
+
+.matrix-detail-card {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.matrix-card-header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 12px;
+}
+
+.matrix-card-tag {
+  display: inline-block;
+  font-family: var(--font-mono, monospace);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  color: rgba(255, 255, 255, 0.5);
+  margin-bottom: 6px;
+}
+
+.matrix-card-header h3 {
+  font-size: 17px;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0;
+}
+
+.matrix-card-desc {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.matrix-gaps-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.matrix-gap-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #f0cb84;
+  padding: 6px 10px;
+  background: rgba(240, 203, 132, 0.06);
+  border: 1px solid rgba(240, 203, 132, 0.18);
+  border-radius: 6px;
+}
+
+.gap-indicator-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #f0cb84;
+}
+
+.matrix-perfect-coverage {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #8addaf;
+  padding: 10px;
+  background: rgba(138, 221, 175, 0.06);
+  border: 1px solid rgba(138, 221, 175, 0.2);
+  border-radius: 8px;
+}
+
+.perfect-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #8addaf;
+  box-shadow: 0 0 6px #8addaf;
+}
+
+.matrix-focus-box {
+  margin-top: auto;
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 8px;
+}
+
+.focus-label {
+  display: block;
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: rgba(255, 255, 255, 0.45);
+  margin-bottom: 4px;
+}
+
+.matrix-focus-box p {
+  font-size: 12.5px;
+  color: rgba(255, 255, 255, 0.75);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.matrix-inspector-content {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.inspector-level-row {
+  display: flex;
+  align-items: center;
+}
+
+.inspector-level-badge {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+
+.inspector-level-badge.exemplary,
+.inspector-level-badge.strong {
+  background: rgba(138, 221, 175, 0.15);
+  color: #8addaf;
+  border: 1px solid rgba(138, 221, 175, 0.3);
+}
+
+.inspector-level-badge.moderate {
+  background: rgba(240, 203, 132, 0.15);
+  color: #f0cb84;
+  border: 1px solid rgba(240, 203, 132, 0.3);
+}
+
+.inspector-level-badge.developing,
+.inspector-level-badge.low {
+  background: rgba(255, 99, 99, 0.15);
+  color: #ff8e8e;
+  border: 1px solid rgba(255, 99, 99, 0.3);
+}
+
+.inspector-tip {
+  font-size: 13.5px;
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.55;
+  margin: 0;
+}
+
+.inspector-evidence-group h4 {
+  font-size: 12px;
+  font-weight: 650;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin: 0 0 8px;
+}
+
+.evidence-quotes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.evidence-quote-box {
+  margin: 0;
+  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.04);
+  border-left: 3px solid #ff6363;
+  border-radius: 0 8px 8px 0;
+  font-size: 13px;
+  color: #ffffff;
+  line-height: 1.5;
+  font-style: italic;
+}
+
+.inspector-signals-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.signals-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.signals-tags-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.signal-pill {
+  font-size: 11px;
+  font-family: var(--font-mono, monospace);
+  padding: 2px 7px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.matrix-inspector-empty {
+  padding: 36px 12px;
+  text-align: center;
+}
+
+@media (max-width: 900px) {
+  .matrix-summary-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ==========================================================================
+   Word Counter & Live Guidance in Story Editor
+   ========================================================================== */
+
+.star-block-subheader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.word-count-badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.5);
+  font-family: var(--font-mono, monospace);
+}
+
+.word-count-badge.optimal {
+  background: rgba(138, 221, 175, 0.1);
+  border-color: rgba(138, 221, 175, 0.25);
+  color: #8addaf;
+}
+
+.word-count-badge.warning {
+  background: rgba(240, 203, 132, 0.1);
+  border-color: rgba(240, 203, 132, 0.25);
+  color: #f0cb84;
+}
+
+.shortcut-hint {
+  font-size: 11.5px;
+  color: rgba(255, 255, 255, 0.4);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ==========================================================================
+   Question Bank Sticky Bar & Practice Hotkeys
+   ========================================================================== */
+
+.qb-sticky-bar {
+  position: sticky;
+  top: 72px;
+  z-index: 20;
+  background: rgba(7, 9, 14, 0.88);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  margin-bottom: 18px;
+}
+
+.qb-hotkey-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  font-size: 10px;
+  font-family: var(--font-mono, monospace);
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* ==========================================================================
+   Resume Import Active Dropzone Glow
+   ========================================================================== */
+
+.resume-dropzone.drag-active {
+  border-color: #ff6363;
+  background: rgba(255, 99, 99, 0.08);
+  box-shadow: 0 0 24px rgba(255, 99, 99, 0.25);
+  transform: scale(1.01);
+}
+
+.review-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ==========================================================================
+   Search Highlight in Previews
+   ========================================================================== */
+
+.search-highlight {
+  background: rgba(255, 204, 0, 0.22);
+  color: #fff9db;
+  font-weight: 600;
+  border-radius: 3px;
+  padding: 1px 3px;
+  box-shadow: 0 0 8px rgba(255, 204, 0, 0.2);
+}
+

@@ -85,6 +85,7 @@ export default function QuestionBank({
     };
   }, [timerRunning]);
 
+
   function updateStatus(questionId: string, nextStatus: QuestionStatus) {
     setStatuses((prev) => {
       const updated = { ...prev, [questionId]: nextStatus };
@@ -204,6 +205,41 @@ export default function QuestionBank({
     setTimerRunning(false);
   }
 
+  // Practice mode keyboard shortcuts (Space=Timer, R=Reset, ArrowRight=Next, ArrowLeft=Prev)
+  useEffect(() => {
+    if (!practiceActive) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement | null;
+      const isInput =
+        target &&
+        (target.tagName === "INPUT" ||
+          target.tagName === "TEXTAREA" ||
+          target.isContentEditable);
+      if (isInput) return;
+
+      if (e.code === "Space") {
+        e.preventDefault();
+        setTimerRunning((r) => !r);
+      } else if (e.key === "r" || e.key === "R") {
+        e.preventDefault();
+        setTimerRunning(false);
+        setTimerSeconds(0);
+      } else if (e.key === "ArrowRight") {
+        e.preventDefault();
+        nextPracticeQuestion();
+      } else if (e.key === "ArrowLeft") {
+        e.preventDefault();
+        prevPracticeQuestion();
+      } else if (e.key === "Escape" && !audioLocked) {
+        e.preventDefault();
+        setPracticeActive(false);
+        setTimerRunning(false);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [practiceActive, practiceIndex, filteredQuestions.length, audioLocked]);
+
   function formatTimer(totalSec: number) {
     const mins = Math.floor(totalSec / 60);
     const secs = totalSec % 60;
@@ -223,10 +259,12 @@ export default function QuestionBank({
   return (
     <div className="qb-container">
       {/* Header section */}
-      <div className="page-heading">
-        <div>
-          <p className="eyebrow">Interview Preparation</p>
-          <h1>
+      <div className="page-heading-clean">
+        <div className="heading-copy">
+          <div className="eyebrow-pill">
+            <span className="eyebrow-dot" /> 50 CORE PROMPTS & DRILLS
+          </div>
+          <h1 className="heading-title">
             Behavioral Question Bank.<br />
             <span>Master 50 high-stakes prompts.</span>
           </h1>
@@ -236,11 +274,11 @@ export default function QuestionBank({
         </div>
         <div className="qb-header-actions">
           {!practiceActive ? (
-            <button className="primary" onClick={() => startPractice(0)}>
+            <button className="raycast-btn-glow pair-btn" onClick={() => startPractice(0)}>
               Start Practice Drill
             </button>
           ) : (
-            <button className="text-button" disabled={audioLocked} onClick={() => { setPracticeActive(false); setTimerRunning(false); }}>
+            <button className="raycast-btn-ghost sm" disabled={audioLocked} onClick={() => { setPracticeActive(false); setTimerRunning(false); }}>
               Exit Practice Mode
             </button>
           )}
@@ -283,6 +321,9 @@ export default function QuestionBank({
               </span>
               <span className="muted">
                 Question {practiceIndex + 1} of {filteredQuestions.length}
+              </span>
+              <span className="shortcut-hint" style={{ fontSize: "11px", marginLeft: "8px" }}>
+                <kbd className="qb-hotkey-badge">Space</kbd> Timer • <kbd className="qb-hotkey-badge">R</kbd> Reset • <kbd className="qb-hotkey-badge">→</kbd> Next
               </span>
             </div>
             <div className="qb-timer-block">
@@ -502,31 +543,33 @@ export default function QuestionBank({
 
       {/* QUESTION BROWSER CONTROLS */}
       <section className="qb-browser-section" aria-label="Question list controls"><fieldset disabled={audioLocked} className="practice-fieldset">
-        {/* Category Pills */}
-        <div className="qb-category-tabs" role="tablist" aria-label="Competency filters">
-          <button
-            className={`qb-cat-pill ${selectedCategory === "all" ? "selected" : ""}`}
-            onClick={() => setSelectedCategory("all")}
-          >
-            All Competencies ({BEHAVIORAL_QUESTIONS.length})
-          </button>
-          {(Object.keys(COMPETENCY_METAS) as CompetencyKey[]).map((catKey) => {
-            const meta = COMPETENCY_METAS[catKey];
-            const catCount = BEHAVIORAL_QUESTIONS.filter((q) => q.category === catKey).length;
-            const isSelected = selectedCategory === catKey;
-            return (
-              <button
-                key={catKey}
-                className={`qb-cat-pill ${isSelected ? "selected" : ""}`}
-                style={{
-                  borderLeftColor: meta.color,
-                }}
-                onClick={() => setSelectedCategory(catKey)}
-              >
-                {meta.shortLabel} ({catCount})
-              </button>
-            );
-          })}
+        {/* Category Pills - Sticky Navigation Bar */}
+        <div className="qb-sticky-bar">
+          <div className="qb-category-tabs" role="tablist" aria-label="Competency filters">
+            <button
+              className={`qb-cat-pill ${selectedCategory === "all" ? "selected" : ""}`}
+              onClick={() => setSelectedCategory("all")}
+            >
+              All Competencies ({BEHAVIORAL_QUESTIONS.length})
+            </button>
+            {(Object.keys(COMPETENCY_METAS) as CompetencyKey[]).map((catKey) => {
+              const meta = COMPETENCY_METAS[catKey];
+              const catCount = BEHAVIORAL_QUESTIONS.filter((q) => q.category === catKey).length;
+              const isSelected = selectedCategory === catKey;
+              return (
+                <button
+                  key={catKey}
+                  className={`qb-cat-pill ${isSelected ? "selected" : ""}`}
+                  style={{
+                    borderLeftColor: meta.color,
+                  }}
+                  onClick={() => setSelectedCategory(catKey)}
+                >
+                  {meta.shortLabel} ({catCount})
+                </button>
+              );
+            })}
+          </div>
         </div>
 
         {/* Search & Secondary Filter Bar */}

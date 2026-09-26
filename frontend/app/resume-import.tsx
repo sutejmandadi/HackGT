@@ -41,6 +41,7 @@ export default function ResumeImport({
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
+  const [isDragging, setIsDragging] = useState(false);
   const controller = useRef<AbortController | null>(null);
   const lock = useRef(false);
   const resultsRef = useRef<HTMLHeadingElement>(null);
@@ -153,10 +154,27 @@ export default function ResumeImport({
       <fieldset className="resume-inputs" disabled={busy || saving || disabled}>
         <legend className="sr-only">Resume source</legend>
         {mode === "file" ? (
-          <div className="resume-dropzone">
+          <div
+            className={`resume-dropzone ${isDragging ? "drag-active" : ""}`}
+            onDragOver={(e) => {
+              e.preventDefault();
+              setIsDragging(true);
+            }}
+            onDragEnter={(e) => {
+              e.preventDefault();
+              setIsDragging(true);
+            }}
+            onDragLeave={() => setIsDragging(false)}
+            onDrop={(e) => {
+              e.preventDefault();
+              setIsDragging(false);
+              const dropped = e.dataTransfer.files?.[0];
+              if (dropped) setFile(dropped);
+            }}
+          >
             <label className="dropzone-label">
               <span className="dropzone-text">
-                {file ? file.name : "Choose a PDF or .txt file to extract"}
+                {file ? file.name : "Choose or drag a PDF / .txt file here"}
               </span>
               <span className="dropzone-hint">
                 Text-based PDF or UTF-8 .txt · up to 5 MB

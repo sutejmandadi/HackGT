@@ -1,6 +1,24 @@
 "use client";
 
-import { useState, useEffect, type FormEvent } from "react";
+import { useState, useEffect, type FormEvent, type ReactNode } from "react";
+
+function highlightMatch(text: string, query: string): ReactNode {
+  if (!query || query.trim().length < 2) return text;
+  const trimmed = query.trim();
+  const escaped = trimmed.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const regex = new RegExp(`(${escaped})`, "gi");
+  const parts = text.split(regex);
+  if (parts.length <= 1) return text;
+  return parts.map((part, i) =>
+    regex.test(part) ? (
+      <mark key={i} className="search-highlight">
+        {part}
+      </mark>
+    ) : (
+      part
+    )
+  );
+}
 
 interface LandingPageProps {
   onSignIn: (email: string, password: string) => Promise<void>;
@@ -146,19 +164,34 @@ export default function LandingPage({
           </button>
 
           <nav className="raycast-nav-links" aria-label="Main Navigation">
-            <a href="#demo-preview" className="raycast-link">Demo</a>
-            <a href="#features" className="raycast-link">Pillars</a>
+            <a
+              href="#demo-preview"
+              className="raycast-link"
+              onClick={(e) => {
+                e.preventDefault();
+                document.getElementById("demo-preview")?.scrollIntoView({ behavior: "smooth" });
+              }}
+            >
+              Demo
+            </a>
+            <a
+              href="#features"
+              className="raycast-link"
+              onClick={(e) => {
+                e.preventDefault();
+                document.getElementById("features")?.scrollIntoView({ behavior: "smooth" });
+              }}
+            >
+              Pillars
+            </a>
             <button
               type="button"
               className="raycast-link raycast-nav-btn"
-              onClick={() => {
-                if (currentUser) {
-                  onOpenWorkspace?.();
-                } else {
-                  openAuth(true);
-                }
+              onClick={(e) => {
+                e.preventDefault();
+                document.getElementById("questions")?.scrollIntoView({ behavior: "smooth" });
               }}
-              title={currentUser ? "Open 50 Questions in workspace" : "Sign up to unlock 50 Questions"}
+              title="Jump to 50 Questions"
             >
               50 Questions
             </button>
@@ -271,6 +304,10 @@ export default function LandingPage({
               <a
                 href="#demo-preview"
                 className="raycast-btn-secondary"
+                onClick={(e) => {
+                  e.preventDefault();
+                  document.getElementById("demo-preview")?.scrollIntoView({ behavior: "smooth" });
+                }}
               >
                 Explore Features & Prompts
               </a>
@@ -313,20 +350,50 @@ export default function LandingPage({
           <button
             type="button"
             className="raycast-pill-item raycast-pill-btn"
-            onClick={() => {
-              if (currentUser) onOpenWorkspace?.();
-              else openAuth(true);
+            onClick={(e) => {
+              e.preventDefault();
+              document.getElementById("questions")?.scrollIntoView({ behavior: "smooth" });
             }}
-            title="Sign up to access 50 Big-Tech questions"
+            title="Jump to 50 Curated Big-Tech Questions"
           >
             50 Curated Big-Tech Prompts
           </button>
           <span className="raycast-pill-dot">•</span>
-          <span className="raycast-pill-item">ML Strength Rubric</span>
+          <button
+            type="button"
+            className="raycast-pill-item raycast-pill-btn"
+            onClick={(e) => {
+              e.preventDefault();
+              document.getElementById("feature-matrix")?.scrollIntoView({ behavior: "smooth" });
+            }}
+            title="Jump to ML Strength Matrix"
+          >
+            ML Strength Rubric
+          </button>
           <span className="raycast-pill-dot">•</span>
-          <span className="raycast-pill-item">PDF Resume Autofill</span>
+          <button
+            type="button"
+            className="raycast-pill-item raycast-pill-btn"
+            onClick={(e) => {
+              e.preventDefault();
+              document.getElementById("feature-resume")?.scrollIntoView({ behavior: "smooth" });
+            }}
+            title="Jump to PDF Resume-to-STAR Autofill"
+          >
+            PDF Resume Autofill
+          </button>
           <span className="raycast-pill-dot">•</span>
-          <span className="raycast-pill-item">2-Min Practice Stopwatch</span>
+          <button
+            type="button"
+            className="raycast-pill-item raycast-pill-btn"
+            onClick={(e) => {
+              e.preventDefault();
+              document.getElementById("feature-drill")?.scrollIntoView({ behavior: "smooth" });
+            }}
+            title="Jump to Mock Drill Stopwatch"
+          >
+            2-Min Practice Stopwatch
+          </button>
         </div>
 
         {/* Raycast-style Interactive Command Bar & Story Preview */}
@@ -379,7 +446,9 @@ export default function LandingPage({
                           className="raycast-pillar-dot"
                           style={{ backgroundColor: item.pillarColor }}
                         />
-                        <span className="raycast-item-title">{item.title}</span>
+                        <span className="raycast-item-title">
+                          {highlightMatch(item.title, searchQuery)}
+                        </span>
                       </div>
                       <div className="raycast-item-meta">
                         <span
@@ -410,7 +479,9 @@ export default function LandingPage({
                   >
                     {activeDemo.category}
                   </span>
-                  <h3 className="raycast-preview-title">{activeDemo.title}</h3>
+                  <h3 className="raycast-preview-title">
+                    {highlightMatch(activeDemo.title, searchQuery)}
+                  </h3>
                 </div>
                 <div className="raycast-preview-score-box">
                   <span className="raycast-score-big">{activeDemo.score}</span>
@@ -420,17 +491,17 @@ export default function LandingPage({
 
               <div className="raycast-preview-section">
                 <h4>SITUATION & PROBLEM</h4>
-                <p>{activeDemo.situation}</p>
+                <p>{highlightMatch(activeDemo.situation, searchQuery)}</p>
               </div>
 
               <div className="raycast-preview-section">
                 <h4>INDIVIDUAL ACTIONS TAKEN</h4>
-                <p>{activeDemo.actions}</p>
+                <p>{highlightMatch(activeDemo.actions, searchQuery)}</p>
               </div>
 
               <div className="raycast-preview-section highlight">
                 <h4>MEASURABLE IMPACT & RESULT</h4>
-                <p>{activeDemo.result}</p>
+                <p>{highlightMatch(activeDemo.result, searchQuery)}</p>
               </div>
             </div>
           </div>
@@ -458,7 +529,7 @@ export default function LandingPage({
 
         <div className="raycast-bento-grid">
           {/* Card 1 */}
-          <div className="raycast-bento-card span-2">
+          <div id="feature-matrix" className="raycast-bento-card span-2">
             <span className="raycast-bento-num">01 · RUBRIC</span>
             <h3>ML Strength Matrix</h3>
             <p>
@@ -503,7 +574,7 @@ export default function LandingPage({
           </div>
 
           {/* Card 3 */}
-          <div className="raycast-bento-card">
+          <div id="feature-drill" className="raycast-bento-card">
             <span className="raycast-bento-num">03 · DRILL</span>
             <h3>Mock Drill Stopwatch</h3>
             <p>
@@ -512,7 +583,7 @@ export default function LandingPage({
           </div>
 
           {/* Card 4 */}
-          <div className="raycast-bento-card span-2">
+          <div id="feature-resume" className="raycast-bento-card span-2">
             <span className="raycast-bento-num">04 · PARSER</span>
             <h3>PDF Resume-to-STAR Autofill</h3>
             <p>
