@@ -451,6 +451,16 @@ textarea { resize:vertical; min-height:112px; }
   color: #ffffff;
 }
 
+.raycast-nav-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+}
+
 .raycast-nav-actions {
   display: flex;
   gap: 10px;
@@ -764,6 +774,21 @@ textarea { resize:vertical; min-height:112px; }
 
 .raycast-pill-dot {
   color: rgba(255, 255, 255, 0.2);
+}
+
+.raycast-pill-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  transition: color 150ms ease;
+}
+
+.raycast-pill-btn:hover {
+  color: #ffffff;
+  text-decoration: underline;
 }
 
 /* Raycast Launcher Window Mockup */
@@ -1080,6 +1105,39 @@ textarea { resize:vertical; min-height:112px; }
 .raycast-bento-card:hover {
   border-color: rgba(255, 255, 255, 0.2);
   background: rgba(255, 255, 255, 0.035);
+}
+
+.raycast-bento-card-clickable {
+  cursor: pointer;
+  text-align: left;
+  outline: none;
+}
+
+.raycast-bento-card-clickable:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255, 99, 99, 0.45);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5), 0 0 24px rgba(255, 99, 99, 0.15);
+}
+
+.raycast-bento-card-clickable:focus-visible {
+  outline: 2px solid #ff6363;
+  outline-offset: 4px;
+}
+
+.raycast-card-action-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 14px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #ff6363;
+  transition: all 150ms ease;
+}
+
+.raycast-bento-card-clickable:hover .raycast-card-action-link {
+  gap: 8px;
+  color: #ff8585;
 }
 
 .raycast-bento-card.span-2 {

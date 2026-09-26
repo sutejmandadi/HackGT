@@ -148,7 +148,20 @@ export default function LandingPage({
           <nav className="raycast-nav-links" aria-label="Main Navigation">
             <a href="#demo-preview" className="raycast-link">Demo</a>
             <a href="#features" className="raycast-link">Pillars</a>
-            <a href="#questions" className="raycast-link">50 Questions</a>
+            <button
+              type="button"
+              className="raycast-link raycast-nav-btn"
+              onClick={() => {
+                if (currentUser) {
+                  onOpenWorkspace?.();
+                } else {
+                  openAuth(true);
+                }
+              }}
+              title={currentUser ? "Open 50 Questions in workspace" : "Sign up to unlock 50 Questions"}
+            >
+              50 Questions
+            </button>
           </nav>
 
           <div className="raycast-nav-actions">
@@ -298,7 +311,17 @@ export default function LandingPage({
         </div>
 
         <div className="raycast-pill-row raycast-phase-item" style={{ animationDelay: "1140ms" }}>
-          <span className="raycast-pill-item">⚡ 50 Curated Big-Tech Prompts</span>
+          <button
+            type="button"
+            className="raycast-pill-item raycast-pill-btn"
+            onClick={() => {
+              if (currentUser) onOpenWorkspace?.();
+              else openAuth(true);
+            }}
+            title="Sign up to access 50 Big-Tech questions"
+          >
+            ⚡ 50 Curated Big-Tech Prompts
+          </button>
           <span className="raycast-pill-dot">•</span>
           <span className="raycast-pill-item">🎯 ML Strength Rubric</span>
           <span className="raycast-pill-dot">•</span>
@@ -451,12 +474,34 @@ export default function LandingPage({
           </div>
 
           {/* Card 2 */}
-          <div className="raycast-bento-card">
+          <div
+            id="questions"
+            className="raycast-bento-card raycast-bento-card-clickable"
+            onClick={() => {
+              if (currentUser) {
+                onOpenWorkspace?.();
+              } else {
+                openAuth(true);
+              }
+            }}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                if (currentUser) onOpenWorkspace?.();
+                else openAuth(true);
+              }
+            }}
+            title={currentUser ? "Open questions in workspace" : "Sign up to unlock all 50 questions"}
+          >
             <div className="raycast-bento-icon">⚡</div>
             <h3>50 Big-Tech Questions</h3>
             <p>
               Curated behavioral prompts asked by Google, Meta, Apple, and Amazon. Filter by competency or search by concept.
             </p>
+            <span className="raycast-card-action-link">
+              {currentUser ? "Open in workspace →" : "Sign up to practice →"}
+            </span>
           </div>
 
           {/* Card 3 */}
