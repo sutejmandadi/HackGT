@@ -244,8 +244,7 @@ export default function LandingPage({
         </h1>
 
         <p className="raycast-hero-subtitle raycast-phase-item" style={{ animationDelay: "800ms" }}>
-          Engineering interviews aren&apos;t won on algorithms alone. Stop rambling through “Tell me about a time…” 
-          Turn messy experiences into structured STAR stories, scored by ML rubrics across the 5 core behavioral pillars.
+          Master interviews by practicing structured STAR stories scored by ML rubrics across the 5 core behavioral pillars.
         </p>
 
         <div className="raycast-hero-cta-group raycast-phase-item" style={{ animationDelay: "980ms" }}>
