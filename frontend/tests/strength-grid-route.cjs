@@ -1,4 +1,5 @@
-﻿const fs = require('node:fs');
+﻿/* eslint-disable @typescript-eslint/no-require-imports -- CommonJS harness compiles the route in isolation for Node tests. */
+const fs = require('node:fs');
 const assert = require('node:assert/strict');
 const Module = require('node:module');
 const path = require('node:path');
@@ -27,4 +28,5 @@ const request = (body) => new Request('http://localhost/api/strength-grid', {met
   assert.equal((await POST(request({stories:[story]}))).status,401);
   console.log('6 route checks passed: invalid inputs, forwarding, offline service, production configuration, missing authentication.');
 })().catch(error=>{console.error(error);process.exitCode=1});
+
 
