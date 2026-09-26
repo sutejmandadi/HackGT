@@ -10,6 +10,10 @@ interface LandingPageProps {
   message: string;
   creating: boolean;
   setCreating: (creating: boolean) => void;
+  currentUser?: { email?: string | null } | null;
+  guestActive?: boolean;
+  onOpenWorkspace?: () => void;
+  onSignOut?: () => Promise<void>;
 }
 
 const DEMO_STORIES = [
@@ -67,6 +71,10 @@ export default function LandingPage({
   message,
   creating,
   setCreating,
+  currentUser,
+  guestActive,
+  onOpenWorkspace,
+  onSignOut,
 }: LandingPageProps) {
   const [authOpen, setAuthOpen] = useState(false);
   const [email, setEmail] = useState("");
@@ -122,12 +130,20 @@ export default function LandingPage({
       {/* Top Navigation */}
       <header className="raycast-nav">
         <div className="raycast-nav-inner">
-          <div className="raycast-brand">
+          <button
+            type="button"
+            className="raycast-brand raycast-brand-btn"
+            onClick={() => {
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }}
+            title="MeCode Home · Scroll to top"
+            aria-label="MeCode Home"
+          >
             <span className="raycast-logo-box">
               <span className="raycast-logo-glyph">m.</span>
             </span>
             <span className="raycast-brand-name">MeCode</span>
-          </div>
+          </button>
 
           <nav className="raycast-nav-links" aria-label="Main Navigation">
             <a href="#demo-preview" className="raycast-link">Demo</a>
@@ -136,18 +152,58 @@ export default function LandingPage({
           </nav>
 
           <div className="raycast-nav-actions">
-            <button
-              className="raycast-btn-ghost"
-              onClick={() => openAuth(false)}
-            >
-              Sign In
-            </button>
-            <button
-              className="raycast-btn-primary"
-              onClick={() => openAuth(true)}
-            >
-              Get Started →
-            </button>
+            {currentUser ? (
+              <>
+                <span className="raycast-user-pill" title={`Logged in as ${currentUser.email ?? "User"}`}>
+                  {currentUser.email ?? "Logged In"}
+                </span>
+                {onSignOut && (
+                  <button
+                    className="raycast-btn-ghost"
+                    onClick={onSignOut}
+                    disabled={busy}
+                  >
+                    Sign Out
+                  </button>
+                )}
+                <button
+                  className="raycast-btn-primary"
+                  onClick={onOpenWorkspace}
+                >
+                  Open Workspace →
+                </button>
+              </>
+            ) : guestActive ? (
+              <>
+                <button
+                  className="raycast-btn-ghost"
+                  onClick={() => openAuth(false)}
+                >
+                  Sign In
+                </button>
+                <button
+                  className="raycast-btn-primary"
+                  onClick={onOpenWorkspace}
+                >
+                  Return to Workspace →
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  className="raycast-btn-ghost"
+                  onClick={() => openAuth(false)}
+                >
+                  Sign In
+                </button>
+                <button
+                  className="raycast-btn-primary"
+                  onClick={() => openAuth(true)}
+                >
+                  Get Started →
+                </button>
+              </>
+            )}
           </div>
         </div>
       </header>
@@ -193,19 +249,53 @@ export default function LandingPage({
         </p>
 
         <div className="raycast-hero-cta-group raycast-phase-item" style={{ animationDelay: "980ms" }}>
-          <button
-            className="raycast-btn-glow"
-            onClick={() => openAuth(true)}
-          >
-            Start Free with Cloud Sync <span className="raycast-arrow">→</span>
-          </button>
-          <button
-            className="raycast-btn-secondary"
-            onClick={onContinueGuest}
-            title="Explore stories, questions, and scoring immediately in local browser storage"
-          >
-            Explore Live Demo Workspace
-          </button>
+          {currentUser ? (
+            <>
+              <button
+                className="raycast-btn-glow"
+                onClick={onOpenWorkspace}
+              >
+                Open Your Workspace <span className="raycast-arrow">→</span>
+              </button>
+              <a
+                href="#demo-preview"
+                className="raycast-btn-secondary"
+              >
+                Explore Features & Prompts
+              </a>
+            </>
+          ) : guestActive ? (
+            <>
+              <button
+                className="raycast-btn-glow"
+                onClick={onOpenWorkspace}
+              >
+                Return to Workspace <span className="raycast-arrow">→</span>
+              </button>
+              <button
+                className="raycast-btn-secondary"
+                onClick={() => openAuth(true)}
+              >
+                Connect Cloud Account
+              </button>
+            </>
+          ) : (
+            <>
+              <button
+                className="raycast-btn-glow"
+                onClick={() => openAuth(true)}
+              >
+                Start Free with Cloud Sync <span className="raycast-arrow">→</span>
+              </button>
+              <button
+                className="raycast-btn-secondary"
+                onClick={onContinueGuest}
+                title="Explore stories, questions, and scoring immediately in local browser storage"
+              >
+                Explore Live Demo Workspace
+              </button>
+            </>
+          )}
         </div>
 
         <div className="raycast-pill-row raycast-phase-item" style={{ animationDelay: "1140ms" }}>
@@ -396,12 +486,24 @@ export default function LandingPage({
           <h2>Ready to stand out in your next behavioral round?</h2>
           <p>Prepare real moments you can draw upon with total confidence.</p>
           <div className="raycast-bottom-btns">
-            <button className="raycast-btn-glow" onClick={() => openAuth(true)}>
-              Create Your Free Account →
-            </button>
-            <button className="raycast-btn-secondary" onClick={onContinueGuest}>
-              Launch Demo Workspace
-            </button>
+            {currentUser ? (
+              <button className="raycast-btn-glow" onClick={onOpenWorkspace}>
+                Go to Your Workspace →
+              </button>
+            ) : guestActive ? (
+              <button className="raycast-btn-glow" onClick={onOpenWorkspace}>
+                Return to Your Workspace →
+              </button>
+            ) : (
+              <>
+                <button className="raycast-btn-glow" onClick={() => openAuth(true)}>
+                  Create Your Free Account →
+                </button>
+                <button className="raycast-btn-secondary" onClick={onContinueGuest}>
+                  Launch Demo Workspace
+                </button>
+              </>
+            )}
           </div>
         </div>
       </section>
