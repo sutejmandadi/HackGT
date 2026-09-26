@@ -652,8 +652,7 @@ function StoryBank({
                     </p>
                   </div>
                 ) : (
-                  filteredStories.map((story, index) => {
-                    const missing = missingSections(story);
+                  filteredStories.map((story) => {
                     const isSelected = draft?.id === story.id;
                     return (
                       <button
@@ -669,37 +668,9 @@ function StoryBank({
                         }}
                         aria-pressed={isSelected}
                       >
-                        <div className="card-top-line">
-                          <span className="card-index-label">
-                            Story {String(index + 1).padStart(2, "0")}
-                          </span>
-                          <span className={`card-status-badge ${missing.length ? "draft" : "filled"}`}>
-                            {missing.length ? "Draft" : "Complete"}
-                          </span>
-                        </div>
-
-                        <h3 className="card-story-title">{story.title || "Untitled Story"}</h3>
-
-                        <p className="card-story-meta">
-                          {[story.organization, story.role].filter(Boolean).join(" · ") ||
-                            "Personal Experience"}
-                        </p>
-
-                        <div className="star-chips-row">
-                          {storySections.map(({ key, label }) => {
-                            const has = !!story[key]?.trim();
-                            const letter = label.charAt(0);
-                            return (
-                              <span
-                                key={key}
-                                className={`star-chip ${has ? "has-content" : ""}`}
-                                title={`${label}: ${has ? "filled" : "missing"}`}
-                              >
-                                {letter}
-                              </span>
-                            );
-                          })}
-                        </div>
+                        <span className="collection-story-title" title={story.title || "Untitled Story"}>
+                          {story.title || "Untitled Story"}
+                        </span>
                       </button>
                     );
                   })
