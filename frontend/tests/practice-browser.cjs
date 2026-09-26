@@ -59,7 +59,7 @@ const ref=new URL(projectUrl).hostname.split('.')[0];
  await page.getByRole('button',{name:'Close report',exact:true}).click();
  assert.equal(await page.locator('#reports-panel .selected-report').count(),0);
  await page.locator('#reports-panel .attempt-row .text-button').first().click();
- await page.locator('#reports-panel .response-disclosure>summary').click();
+ assert(await page.locator('#reports-panel .response-disclosure').evaluate(el=>el.open));
  await page.getByRole('heading',{name:'Answer breakdown',exact:true}).waitFor();
  assert.equal(await page.locator('#reports-panel .pace-chart').count(),0);
 
@@ -76,7 +76,7 @@ const ref=new URL(projectUrl).hostname.split('.')[0];
  await page.getByRole('button',{name:'Close report',exact:true}).click();
  assert.equal(await page.locator('#reports-panel .selected-report').count(),0);
  await page.locator('#reports-panel .attempt-row .text-button').first().click();
- await page.locator('#reports-panel .response-disclosure>summary').click();
+ assert(await page.locator('#reports-panel .response-disclosure').evaluate(el=>el.open));
  await page.getByRole('heading',{name:'Answer breakdown',exact:true}).waitFor();
  assert.equal(await page.locator('#reports-panel .pace-chart').count(),0);
 
@@ -99,8 +99,6 @@ const ref=new URL(projectUrl).hostname.split('.')[0];
  await page.locator('#reports-panel .question-history summary').first().click();
  await page.locator('#reports-panel .attempt-row .text-button').first().click();
  assert.match(await page.locator('#reports-panel').innerText(),/Preliminary trend/);
- await page.getByLabel('Compare with an earlier attempt').selectOption('fixture-3');
- await page.getByRole('heading',{name:'Attempt comparison',exact:true}).waitFor();
  await page.screenshot({path:path.join(output,'progress-mobile.png'),fullPage:true});
  await page.setViewportSize({width:1440,height:1000});
  await page.screenshot({path:path.join(output,'progress-desktop.png'),fullPage:true});

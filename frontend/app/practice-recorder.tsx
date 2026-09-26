@@ -1,17 +1,21 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import type { BehavioralQuestion } from "./questions";
 import { isAttempt, seconds, type Attempt } from "./practice-types";
 import { practiceHeaders, saveLocalAttempt } from "./practice-repository";
 import { cloudConfigured } from "./supabase";
+import RecordingPlayer from "./recording-player";
 import InterviewReport from "./interview-report";
 
-export default function PracticeRecorder({question,linkedStoryId,onLock,onSaved,onReports}: {
+export default function PracticeRecorder({question,linkedStoryId,onLock,onSaved}: {
   question: BehavioralQuestion; linkedStoryId: string | null; onLock: (locked: boolean)=>void; onSaved: ()=>void; onReports: ()=>void;
 }) {
   const [state,setState]=useState("idle"), [elapsed,setElapsed]=useState(0), [level,setLevel]=useState(0);
   const [blob,setBlob]=useState<Blob|null>(null), [url,setUrl]=useState(""), [error,setError]=useState("");
   const [stage,setStage]=useState(""), [report,setReport]=useState<Attempt|null>(null);
+  const [privacyOpen,setPrivacyOpen]=useState(false);
+  const privacyId=useId();
+  const [reportViewed,setReportViewed]=useState(false);
   const [provider,setProvider]=useState<{mode:string;ready:boolean;message?:string}|null>(null);
   const recorder=useRef<MediaRecorder|null>(null), stream=useRef<MediaStream|null>(null), audio=useRef<AudioContext|null>(null);
   const chunks=useRef<Blob[]>([]), byteCount=useRef(0), frame=useRef(0), started=useRef(0), accumulated=useRef(0);
@@ -104,26 +108,26 @@ export default function PracticeRecorder({question,linkedStoryId,onLock,onSaved,
       }
       if(!saved)throw new Error("Analysis was interrupted. Retry the same recording; saved attempts will not duplicate.");
       if(!cloudConfigured)saveLocalAttempt(saved);
-      setReport(saved);setState("done");setStage("Report saved");onSaved();
+      setReportViewed(false);setReport(saved);setState("done");setStage("Report saved");onSaved();
     }catch(err){setState("review");setError(err instanceof Error?err.message:"Analysis failed. Your recording is still here.");}
     finally{abort.current=null;}
   }
   return <section className="practice-recorder" aria-label="Record an interview response" data-practice-locked={locked}>
-    <div className="section-heading"><h3>Record your answer</h3><span>{seconds(elapsed)} / 5:00</span></div>
+    <div className="section-heading"><div className="recorder-title"><h3>Record your answer</h3><button type="button" className="audio-privacy-info" aria-label="Audio privacy information" aria-expanded={privacyOpen} aria-controls={privacyId} onClick={()=>setPrivacyOpen(open=>!open)}><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10v1"/></svg></button></div><span>{seconds(elapsed)} / 5:00</span></div>
+    {privacyOpen && <div id={privacyId} className="audio-privacy-panel" role="region" aria-label="Audio privacy" onKeyDown={event=>{if(event.key==="Escape")setPrivacyOpen(false);}}><strong>Audio privacy</strong><p>{`${provider?.mode==='local'?'Audio is transcribed on the computer running the backend, without an external transcription service.':'Audio is sent to the configured transcription provider when you analyze.'} MeCode deletes temporary audio and saves the transcript and coaching report. English transcription · 12 MB maximum.`}</p><button className="text-button" onClick={()=>setPrivacyOpen(false)}>Close</button></div>}
     {provider?.mode==='mock' && <p className="resume-warning">Sample mode: you can record and replay, but analysis uses example text. Connect live transcription to get feedback on your own answer.</p>}
-    {provider?.mode==='local' && provider.ready && <p className="muted">Local transcription · No API key required</p>}
     {provider && !provider.ready && <p className="resume-warning">{provider.message} You can still record and replay your answer.</p>}
-    <details><summary>Audio privacy</summary><p className="muted">{provider?.mode==='local' ? 'Audio is transcribed on the computer running the backend, without an external transcription service.' : 'Audio is sent to the configured transcription provider when you analyze.'} MeCode deletes temporary audio and saves the transcript and coaching report. English transcription · 12 MB maximum.</p></details>
-    <div className="audio-level" role="meter" aria-label="Microphone level" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(level*100)}><span style={{width:`${level*100}%`}} /></div>
+
+    {(state==="recording"||state==="paused") && <div className="audio-level" role="meter" aria-label="Microphone level" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(level*100)}><span style={{width:`${level*100}%`}} /></div>}
     <div className="practice-controls">
       {state==="idle" && <button className="primary" onClick={start}>Start recording</button>}
       {state==="requesting" && <button className="text-button" onClick={()=>{generation.current++;working.current=false;setState("idle");}}>Cancel microphone request</button>}
       {(state==="recording"||state==="paused") && <><button className="text-button" onClick={pause}>{state==="paused"?"Resume recording":"Pause recording"}</button><button className="primary" onClick={stop}>Stop recording</button></>}
-      {blob && <><button className="text-button" disabled={state==="busy"} onClick={discard}>Discard recording</button>{state!=="done" && <button className="primary" disabled={state==="busy"||blob.size>12*1024*1024} onClick={submit}>Analyze Response</button>}</>}
+      {blob && <>{state!=="done" && <button className="primary" disabled={state==="busy"||blob.size>12*1024*1024} onClick={submit}>Analyze Response</button>}</>}
     </div>
-    <p role="status" aria-live="polite">{state==="requesting"?"Waiting for microphone permission…":state==="recording"?"Recording. Speak naturally; pauses are part of your response.":state==="paused"?"Paused. Paused time is excluded from the recording.":state==="busy"?`${stage}…`:state==="review"?"Review or replay the recording, then analyze or discard it before switching questions.":stage}</p>
+    <p className={state==="busy"?"analysis-status":"recorder-status"} role="status" aria-live="polite">{state==="busy" && <span className="analysis-wave" aria-hidden="true"><i/><i/><i/><i/><i/></span>}{state==="requesting"?"Waiting for microphone permission…":state==="recording"?"Recording. Speak naturally; pauses are part of your response.":state==="paused"?"Paused. Paused time is excluded from the recording.":state==="busy"?`${stage}…`:state==="review"?"Listen back, then analyze your answer.":stage}</p>
     {error && <p className="error" role="alert">{error}</p>}
-    {url && <audio controls src={url} aria-label="Review your recording" />}
-    {report && <><button className="text-button" onClick={onReports}>Open saved Reports</button><details className="saved-preview"><summary>View report</summary><InterviewReport attempt={report} audioUrl={url} /></details></>}
+    {url && <RecordingPlayer key={url} src={url} duration={elapsed} onDiscard={discard} disabled={state==="busy"} />}
+    {report && <><details className={`saved-preview ${reportViewed?"":"report-unread"}`} onToggle={e=>{if(e.currentTarget.open)setReportViewed(true);}}><summary>View report{!reportViewed && <span className="report-ready-label">Ready to review <span aria-hidden="true">↗</span></span>}</summary><InterviewReport attempt={report} audioUrl={url} /></details></>}
   </section>;
 }
