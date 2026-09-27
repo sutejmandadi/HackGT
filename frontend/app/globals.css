@@ -1220,11 +1220,48 @@ textarea { resize:vertical; min-height:112px; }
 }
 
 .raycast-bottom-inner {
-  background: linear-gradient(180deg, rgba(255, 99, 99, 0.09) 0%, rgba(167, 139, 250, 0.04) 100%);
-  border: 1px solid rgba(255, 99, 99, 0.25);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.01) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 20px;
   padding: 60px 32px;
   text-align: center;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   SCROLL-TRIGGERED REVEAL (Apple / Linear style slide-up)
+   ═══════════════════════════════════════════════════════════ */
+.scroll-reveal {
+  opacity: 0;
+  transform: translateY(32px);
+  transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.85s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.scroll-reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Staggered delay modifiers for cascading card grids */
+.scroll-reveal-delay-1 { transition-delay: 80ms; }
+.scroll-reveal-delay-2 { transition-delay: 160ms; }
+.scroll-reveal-delay-3 { transition-delay: 240ms; }
+.scroll-reveal-delay-4 { transition-delay: 320ms; }
+
+/* Subtle lift on hover for revealed cards */
+.raycast-bento-card.scroll-reveal.is-visible:hover {
+  transform: translateY(-2px);
+}
+
+/* Accessibility: Respect users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .scroll-reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
 }
 
 .raycast-bottom-inner h2 {
