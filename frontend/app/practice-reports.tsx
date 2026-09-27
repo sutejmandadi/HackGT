@@ -907,7 +907,7 @@ export default function PracticeReports({ refresh }: { refresh: number }) {
           <div className="matrix-search-box">
             <input
               type="text"
-              placeholder="Search practices by question or topic…"
+              placeholder="Search practices…"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="matrix-search-input"

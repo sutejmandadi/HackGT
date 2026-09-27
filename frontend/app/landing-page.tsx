@@ -171,7 +171,7 @@ export default function LandingPage({
                 document.getElementById("demo-preview")?.scrollIntoView({ behavior: "smooth" });
               }}
             >
-              Demo
+
             </a>
             <a
               href="#features"
@@ -181,7 +181,7 @@ export default function LandingPage({
                 document.getElementById("features")?.scrollIntoView({ behavior: "smooth" });
               }}
             >
-              Pillars
+  
             </a>
             <button
               type="button"
@@ -192,7 +192,7 @@ export default function LandingPage({
               }}
               title="Jump to 50 Questions"
             >
-              50 Questions
+
             </button>
           </nav>
 

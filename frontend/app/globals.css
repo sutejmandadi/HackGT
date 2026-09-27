@@ -3249,7 +3249,7 @@ textarea { resize:vertical; min-height:112px; }
 /* Anchor section links to the brand rather than distributing three uneven groups. */
 .landing-nav .raycast-nav-inner { justify-content:flex-start; gap:32px; }
 .landing-nav .raycast-brand { flex-shrink:0; }
-.landing-nav .raycast-nav-links { display:flex; gap:24px; padding-left:32px; border-left:1px solid var(--border); }
+.landing-nav .raycast-nav-links { display:flex; gap:24px; padding-left:32px; border-left:0; }
 .landing-nav .raycast-nav-links .raycast-link { display:inline-flex; align-items:center; min-height:40px; white-space:nowrap; font-size:13px; }
 .landing-nav .raycast-nav-actions { margin-left:auto; min-width:0; }
 .landing-nav .raycast-user-pill { max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
