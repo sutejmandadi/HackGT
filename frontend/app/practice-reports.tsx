@@ -607,7 +607,7 @@ export default function PracticeReports({ refresh }: { refresh: number }) {
     const startCheck = map.has(todayKey) ? today : (map.has(yesterdayKey) ? yesterday : null);
     if (startCheck) {
       current = 1;
-      let d = new Date(startCheck.getFullYear(), startCheck.getMonth(), startCheck.getDate() - 1);
+      const d = new Date(startCheck.getFullYear(), startCheck.getMonth(), startCheck.getDate() - 1);
       while (map.has(toDateKey(d))) {
         current++;
         d.setDate(d.getDate() - 1);

@@ -7,6 +7,7 @@ import AuthBoundary from "./auth-boundary";
 import StrengthMatrix from "./strength-matrix";
 import QuestionBank from "./question-bank";
 import PracticeReports from "./practice-reports";
+import MeCodeLogo from "./logo";
 import ResumeImport, { resumeIdentity } from "./resume-import";
 import type { BehavioralQuestion } from "./questions";
 import {
@@ -358,9 +359,7 @@ function StoryBank({
             title="Return to MeCode Home"
             aria-label="Return to MeCode Home"
           >
-            <span className="raycast-logo-box">
-              <span className="raycast-logo-glyph">m.</span>
-            </span>
+            <MeCodeLogo size={18} badge={true} />
             <span className="raycast-brand-name">MeCode</span>
             <span className="workspace-pill-tag">Workspace</span>
           </button>
@@ -970,7 +969,7 @@ function StoryBank({
       <footer className="raycast-footer">
         <div className="raycast-footer-inner">
           <div className="raycast-brand">
-            <span className="raycast-logo-glyph">m.</span>
+            <MeCodeLogo size={16} badge={true} />
             <span>MeCode</span>
           </div>
           <span className="raycast-footer-copy">LeetCode solved technicals. MeCode solves the rest.</span>

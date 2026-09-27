@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, type FormEvent, type ReactNode } from "react";
+import MeCodeLogo from "./logo";
 
 function highlightMatch(text: string, query: string): ReactNode {
   if (!query || query.trim().length < 2) return text;
@@ -157,9 +158,7 @@ export default function LandingPage({
             title="MeCode Home · Scroll to top"
             aria-label="MeCode Home"
           >
-            <span className="raycast-logo-box">
-              <span className="raycast-logo-glyph">m.</span>
-            </span>
+            <MeCodeLogo size={18} badge={true} />
             <span className="raycast-brand-name">MeCode</span>
           </button>
 
@@ -625,7 +624,7 @@ export default function LandingPage({
       <footer className="raycast-footer">
         <div className="raycast-footer-inner">
           <div className="raycast-brand">
-            <span className="raycast-logo-glyph">m.</span>
+            <MeCodeLogo size={16} badge={true} />
             <span>MeCode</span>
           </div>
           <span className="raycast-footer-copy">LeetCode solved technicals. MeCode solves the rest.</span>
@@ -652,9 +651,7 @@ export default function LandingPage({
             </button>
 
             <div className="raycast-modal-header">
-              <span className="raycast-logo-box">
-                <span className="raycast-logo-glyph">m.</span>
-              </span>
+              <MeCodeLogo size={22} badge={true} />
               <h2 id="auth-modal-title">
                 {creating ? "Create your account" : "Welcome back"}
               </h2>
