@@ -318,26 +318,34 @@ textarea { resize:vertical; min-height:112px; }
 
 .raycast-glow-top {
   position: absolute;
-  top: -100px;
+  top: -120px;
   left: 50%;
-  transform: translateX(-50%);
-  width: 900px;
-  height: 500px;
-  background: radial-gradient(ellipse 65% 55% at 50% 30%, rgba(255, 99, 99, 0.18), rgba(167, 139, 250, 0.12), transparent 75%);
-  filter: blur(60px);
+  transform: translate3d(-50%, 0, 0);
+  width: 950px;
+  height: 550px;
+  background: radial-gradient(
+    ellipse 60% 50% at 50% 35%,
+    rgba(255, 99, 99, 0.11) 0%,
+    rgba(167, 139, 250, 0.07) 35%,
+    rgba(99, 102, 241, 0.03) 55%,
+    transparent 72%
+  );
   pointer-events: none;
   z-index: 0;
-  animation: raycastAmbientPulse 10s ease-in-out infinite;
 }
 
 .raycast-glow-ambient {
   position: absolute;
-  top: 360px;
-  right: -80px;
+  top: 320px;
+  right: -60px;
   width: 650px;
   height: 550px;
-  background: radial-gradient(circle, rgba(77, 225, 255, 0.08), transparent 70%);
-  filter: blur(80px);
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(56, 189, 248, 0.06) 0%,
+    rgba(56, 189, 248, 0.02) 40%,
+    transparent 68%
+  );
   pointer-events: none;
   z-index: 0;
 }
@@ -544,43 +552,33 @@ textarea { resize:vertical; min-height:112px; }
 @keyframes raycastPhaseBlurUp {
   0% {
     opacity: 0;
-    transform: translateY(22px) scale(0.975);
-    filter: blur(12px);
-  }
-  60% {
-    opacity: 0.88;
-    filter: blur(2px);
+    transform: translate3d(0, 16px, 0);
   }
   100% {
     opacity: 1;
-    transform: translateY(0) scale(1);
-    filter: blur(0px);
+    transform: translate3d(0, 0, 0);
   }
 }
 
 @keyframes raycastPhaseItemUp {
   0% {
     opacity: 0;
-    transform: translateY(18px);
-    filter: blur(8px);
+    transform: translate3d(0, 14px, 0);
   }
   100% {
     opacity: 1;
-    transform: translateY(0);
-    filter: blur(0px);
+    transform: translate3d(0, 0, 0);
   }
 }
 
 @keyframes raycastLauncherEnter {
   0% {
     opacity: 0;
-    transform: translateY(32px) scale(0.98);
-    filter: blur(10px);
+    transform: translate3d(0, 18px, 0) scale(0.99);
   }
   100% {
     opacity: 1;
-    transform: translateY(0) scale(1);
-    filter: blur(0px);
+    transform: translate3d(0, 0, 0) scale(1);
   }
 }
 
@@ -678,19 +676,13 @@ textarea { resize:vertical; min-height:112px; }
 .raycast-phase-word {
   display: inline-block;
   opacity: 0;
-  animation: raycastPhaseBlurUp 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  will-change: transform, opacity, filter;
+  animation: raycastPhaseBlurUp 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .raycast-title-line-2 {
   opacity: 0;
   display: inline-block;
-  filter: drop-shadow(0 0 28px rgba(255, 99, 99, 0.32));
-  transition: filter 300ms ease;
-}
-
-.raycast-hero-title:hover .raycast-title-line-2 {
-  filter: drop-shadow(0 0 40px rgba(255, 99, 99, 0.55));
+  transition: opacity 300ms ease;
 }
 
 .raycast-hero-gradient {
@@ -706,20 +698,17 @@ textarea { resize:vertical; min-height:112px; }
   background-size: 240% auto;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  animation: raycastPhaseBlurUp 0.95s cubic-bezier(0.16, 1, 0.3, 1) forwards,
-             raycastGradientPhase 8s ease-in-out infinite 1.5s;
+  animation: raycastPhaseBlurUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .raycast-phase-item {
   opacity: 0;
-  animation: raycastPhaseItemUp 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  will-change: transform, opacity, filter;
+  animation: raycastPhaseItemUp 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .raycast-phase-launcher {
   opacity: 0;
-  animation: raycastLauncherEnter 1.05s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  will-change: transform, opacity, filter;
+  animation: raycastLauncherEnter 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .raycast-hero-subtitle {
