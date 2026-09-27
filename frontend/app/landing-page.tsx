@@ -2,7 +2,6 @@
 
 import { useState, useEffect, type FormEvent, type ReactNode } from "react";
 import MeCodeLogo from "./logo";
-import useScrollReveal from "./use-scroll-reveal";
 
 function highlightMatch(text: string, query: string): ReactNode {
   if (!query || query.trim().length < 2) return text;
@@ -102,8 +101,6 @@ export default function LandingPage({
   const [selectedDemoIndex, setSelectedDemoIndex] = useState(0);
   const [phaseKey, setPhaseKey] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
-
-  useScrollReveal(".scroll-reveal");
 
   const filteredStories = DEMO_STORIES.filter((item) => {
     if (!searchQuery.trim()) return true;
@@ -399,7 +396,7 @@ export default function LandingPage({
         </div>
 
         {/* Raycast-style Interactive Command Bar & Story Preview */}
-        <div id="demo-preview" className="raycast-launcher-window scroll-reveal">
+        <div id="demo-preview" className="raycast-launcher-window raycast-phase-launcher" style={{ animationDelay: "1280ms" }}>
           <div className="raycast-launcher-bar">
             <input
               type="text"
@@ -523,7 +520,7 @@ export default function LandingPage({
 
       {/* Feature Bento Grid */}
       <section id="features" className="raycast-bento-section">
-        <div className="raycast-section-header scroll-reveal">
+        <div className="raycast-section-header">
           <p className="raycast-eyebrow">Complete Behavioral Toolkit</p>
           <h2 className="raycast-section-title">Everything you need to nail your interview.</h2>
           <p className="raycast-section-desc">Designed with the speed, precision, and minimalism engineering teams love.</p>
@@ -531,7 +528,7 @@ export default function LandingPage({
 
         <div className="raycast-bento-grid">
           {/* Card 1 */}
-          <div id="feature-matrix" className="raycast-bento-card span-2 scroll-reveal scroll-reveal-delay-1">
+          <div id="feature-matrix" className="raycast-bento-card span-2">
             <span className="raycast-bento-num">01 · RUBRIC</span>
             <h3>ML Strength Matrix</h3>
             <p>
@@ -547,7 +544,7 @@ export default function LandingPage({
           {/* Card 2 */}
           <div
             id="questions"
-            className="raycast-bento-card raycast-bento-card-clickable scroll-reveal scroll-reveal-delay-2"
+            className="raycast-bento-card raycast-bento-card-clickable"
             onClick={() => {
               if (currentUser) {
                 onOpenWorkspace?.();
@@ -576,7 +573,7 @@ export default function LandingPage({
           </div>
 
           {/* Card 3 */}
-          <div id="feature-drill" className="raycast-bento-card scroll-reveal scroll-reveal-delay-3">
+          <div id="feature-drill" className="raycast-bento-card">
             <span className="raycast-bento-num">03 · DRILL</span>
             <h3>Mock Drill Stopwatch</h3>
             <p>
@@ -585,7 +582,7 @@ export default function LandingPage({
           </div>
 
           {/* Card 4 */}
-          <div id="feature-resume" className="raycast-bento-card span-2 scroll-reveal scroll-reveal-delay-4">
+          <div id="feature-resume" className="raycast-bento-card span-2">
             <span className="raycast-bento-num">04 · PARSER</span>
             <h3>PDF Resume-to-STAR Autofill</h3>
             <p>
@@ -596,7 +593,7 @@ export default function LandingPage({
       </section>
 
       {/* CTA Banner */}
-      <section className="raycast-bottom-cta scroll-reveal">
+      <section className="raycast-bottom-cta">
         <div className="raycast-bottom-inner">
           <h2>Ready to stand out in your next behavioral round?</h2>
           <p>Prepare real moments you can draw upon with total confidence.</p>
