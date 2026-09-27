@@ -146,7 +146,7 @@ export default function LandingPage({
       <div className="raycast-glow-ambient" aria-hidden="true" />
 
       {/* Top Navigation */}
-      <header className="raycast-nav">
+      <header className="raycast-nav landing-nav">
         <div className="raycast-nav-inner">
           <button
             type="button"
@@ -523,7 +523,7 @@ export default function LandingPage({
       <section id="features" className="raycast-bento-section">
         <div className="raycast-section-header">
           <p className="raycast-eyebrow">Complete Behavioral Toolkit</p>
-          <h2 className="raycast-section-title">Everything you need to nail the loop.</h2>
+          <h2 className="raycast-section-title">Everything you need to nail your interview.</h2>
           <p className="raycast-section-desc">Designed with the speed, precision, and minimalism engineering teams love.</p>
         </div>
 

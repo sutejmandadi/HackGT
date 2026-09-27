@@ -3223,4 +3223,21 @@ textarea { resize:vertical; min-height:112px; }
   padding: 1px 3px;
   box-shadow: 0 0 8px rgba(255, 204, 0, 0.2);
 }
-
+
+/* Anchor section links to the brand rather than distributing three uneven groups. */
+.landing-nav .raycast-nav-inner { justify-content:flex-start; gap:32px; }
+.landing-nav .raycast-brand { flex-shrink:0; }
+.landing-nav .raycast-nav-links { display:flex; gap:24px; padding-left:32px; border-left:1px solid var(--border); }
+.landing-nav .raycast-nav-links .raycast-link { display:inline-flex; align-items:center; min-height:40px; white-space:nowrap; font-size:13px; }
+.landing-nav .raycast-nav-actions { margin-left:auto; min-width:0; }
+.landing-nav .raycast-user-pill { max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+@media(max-width:900px) {
+  .landing-nav .raycast-nav-inner { flex-wrap:wrap; gap:12px 16px; padding:12px 24px; }
+  .landing-nav .raycast-nav-links { order:3; flex-basis:100%; border-left:0; border-top:1px solid var(--border); padding:8px 0 0; gap:24px; }
+  .landing-nav .raycast-user-pill { display:none; }
+}
+@media(max-width:480px) {
+  .landing-nav .raycast-nav-inner { padding:12px 16px; }
+  .landing-nav .raycast-nav-actions { gap:4px; }
+  .landing-nav .raycast-nav-actions button { padding-left:10px; padding-right:10px; }
+}
