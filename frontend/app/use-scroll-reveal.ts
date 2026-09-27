@@ -30,8 +30,8 @@ export function useScrollReveal(selector = ".scroll-reveal") {
         });
       },
       {
-        threshold: 0.1,
-        rootMargin: "0px 0px -40px 0px",
+        threshold: 0.02,
+        rootMargin: "0px 0px 60px 0px",
       }
     );
 

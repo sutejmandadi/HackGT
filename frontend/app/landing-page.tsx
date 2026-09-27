@@ -399,7 +399,7 @@ export default function LandingPage({
         </div>
 
         {/* Raycast-style Interactive Command Bar & Story Preview */}
-        <div id="demo-preview" className="raycast-launcher-window raycast-phase-launcher scroll-reveal" style={{ animationDelay: "1280ms" }}>
+        <div id="demo-preview" className="raycast-launcher-window scroll-reveal">
           <div className="raycast-launcher-bar">
             <input
               type="text"
