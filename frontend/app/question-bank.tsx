@@ -53,10 +53,18 @@ export default function QuestionBank({
   onDraftForQuestion,
 }: QuestionBankProps) {
   const isClient = useSyncExternalStore(subscribeToHydration, () => true, () => false);
-  const [links, setLinks] = useState<Record<string, string[]>>(() => readStorageMap<string[]>(STORAGE_LINKS_KEY));
+  const [storedLinks, setLinks] = useState<Record<string, string[]>>(() => readStorageMap<string[]>(STORAGE_LINKS_KEY));
   const [statuses, setStatuses] = useState<Record<string, QuestionStatus>>(() => readStorageMap<QuestionStatus>(STORAGE_STATUS_KEY));
   const [notes, setNotes] = useState<Record<string, string>>(() => readStorageMap<string>(STORAGE_NOTES_KEY));
 
+  // Derive visible links without deleting stored data while cloud stories load.
+  const links = useMemo(() => {
+    const storyIds = new Set(stories.map(story => story.id));
+    return Object.fromEntries(Object.entries(storedLinks).map(([questionId, ids]) => [
+      questionId,
+      Array.isArray(ids) ? [...new Set(ids.filter(id => typeof id === "string" && storyIds.has(id)))] : [],
+    ]));
+  }, [storedLinks, stories]);
   // Filter state
   const [selectedCategory, setSelectedCategory] = useState<CompetencyKey | "all">("all");
   const [searchQuery, setSearchQuery] = useState("");
@@ -107,7 +115,7 @@ export default function QuestionBank({
 
   function toggleStoryLink(questionId: string, storyId: string) {
     setLinks((prev) => {
-      const currentList = prev[questionId] || [];
+      const currentList = Array.isArray(prev[questionId]) ? prev[questionId] : [];
       const updatedList = currentList.includes(storyId)
         ? currentList.filter((id) => id !== storyId)
         : [...currentList, storyId];
@@ -675,7 +683,7 @@ export default function QuestionBank({
                   <div className="qb-card-links-section">
                     <div className="qb-links-header">
                       <span className="muted">
-                        {qLinks.length === 0 ? "No story linked" : `${qLinks.length} story linked`}
+                        {qLinks.length === 0 ? "No story linked" : `${qLinks.length} ${qLinks.length === 1 ? "story" : "stories"} linked`}
                       </span>
                       <div className="qb-links-actions">
                         {stories.length > 0 && (

@@ -410,7 +410,7 @@ function StoryBank({
             {([
               { id: "stories", label: "Stories" },
               { id: "matrix", label: "Strength Matrix" },
-              { id: "questions", label: "Question Bank (50)" },
+              { id: "questions", label: "MeCode 50" },
               { id: "reports", label: "Reports" },
             ] as const).map(({ id: tab, label }) => (
               <button
@@ -946,9 +946,6 @@ function StoryBank({
                         </button>
                       </div>
                       <div className="footer-right-buttons">
-                        <span className="shortcut-hint">
-                          <kbd className="qb-hotkey-badge">⌘S</kbd> to save
-                        </span>
                         <button
                           className="raycast-btn-glow"
                           type="submit"

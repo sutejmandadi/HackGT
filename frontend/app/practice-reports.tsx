@@ -763,6 +763,7 @@ export default function PracticeReports({ refresh }: { refresh: number }) {
         </p>
       )}
 
+      {attempts.some(a=>a.pipeline_version?.startsWith("demo-seed-")) && <p className="resume-warning">Demo dataset included · Calendar activity and scores include fictional practice sessions.</p>}
       {/* Monthly Contribution Calendar */}
       <section className="monthly-calendar-card" aria-label="Monthly practice calendar">
         <div className="monthly-header">

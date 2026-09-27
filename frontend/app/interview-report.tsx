@@ -17,6 +17,7 @@ export default function InterviewReport({attempt,audioUrl}:{attempt:Attempt;audi
   function focus(index:number){setExpanded(true);setSelected(index);const segment=segments.find(s=>s.index===index);if(player.current&&segment)player.current.currentTime=segment.start;}
   function evidence(item:Evidence,i:number){return <li key={i}>{item.text}<div className="evidence-links">{item.segments.slice(0,8).map(index=>{const s=segments.find(s=>s.index===index);return s?<button key={index} className="text-button" onClick={()=>focus(index)}>{seconds(s.start)} · View passage</button>:null;})}</div></li>;}
   return <div className="interview-report">
+    {attempt.pipeline_version.startsWith("demo-seed-") && <p className="resume-warning">Demo dataset · Fictional experience, transcript, and timing for demonstration.</p>}
     {attempt.is_mock && <p className="resume-warning" role="note">Sample report: this uses example text, not your spoken answer. Scores and pacing are hidden, and this report does not count toward progress.</p>}
     {!attempt.is_mock && <div className="report-score-grid">{orderedScores.map(([key,value])=><div key={key}><strong>{Math.round(value)}<small>/100</small></strong><span>{key}</span></div>)}</div>}
     <details><summary>How scoring works</summary>
